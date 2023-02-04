@@ -24,10 +24,25 @@
             <q-item-label caption>56</q-item-label>
           </q-item-section>
           <q-item-section>
-            <q-btn label="Record visit" no-caps />
+            <q-btn
+              icon="inventory"
+              no-caps
+              dense
+              @click="
+                $router.push({
+                  name: 'record-visit',
+                  params: {
+                    patient: 1,
+                  },
+                  query: {
+                    creating: '1',
+                  },
+                })
+              "
+            />
           </q-item-section>
           <q-item-section>
-            <q-btn label="Details" no-caps />
+            <q-btn icon="details" no-caps dense />
           </q-item-section>
         </q-item>
       </q-list>

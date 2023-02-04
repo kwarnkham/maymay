@@ -4,9 +4,22 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue'), name: 'index' },
-      { path: 'patient', component: () => import('pages/PatientsPage.vue'), name: 'patients' },
-      { path: 'record-visit/:patient', component: () => import('pages/RecordVisit.vue'), name: 'record-visit' },
+      {
+        path: '',
+        component: () => import('pages/IndexPage.vue'), name: 'index'
+      },
+      {
+        path: 'patient',
+        component: () => import('pages/PatientsPage.vue'), name: 'patients'
+      },
+      {
+        path: 'record-visit/:patient',
+        component: () => import('pages/RecordVisit.vue'), name: 'record-visit'
+      },
+      {
+        path: 'visit-details/:visit',
+        component: () => import('pages/VisitDetails.vue'), name: 'visit-details'
+      },
     ]
   },
 

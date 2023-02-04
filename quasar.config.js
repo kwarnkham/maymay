@@ -28,6 +28,7 @@ module.exports = configure(function (ctx) {
     boot: [
       'i18n',
       'axios',
+      'quasar-lang-pack'
     ],
 
     // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-css
@@ -104,7 +105,7 @@ module.exports = configure(function (ctx) {
       // directives: [],
 
       // Quasar plugins
-      plugins: []
+      plugins: ['Loading', 'Dialog', 'Notify', 'LocalStorage', 'LoadingBar']
     },
 
     // animations: 'all', // --- includes all animations

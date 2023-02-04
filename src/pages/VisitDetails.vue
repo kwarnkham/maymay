@@ -12,8 +12,10 @@
         </div>
       </q-card-section>
     </q-card>
-
-    <VisitOrderTable creating />
+    <VisitOrderTable
+      :processing="!!$route.query.processing"
+      :checkout="!!$route.query.checkout"
+    />
   </q-page>
 </template>
 
