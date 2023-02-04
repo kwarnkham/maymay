@@ -1,17 +1,20 @@
 <template>
-  <q-page class="flex flex-center">
-    <img
-      alt="Quasar logo"
-      src="~assets/quasar-logo-vertical.svg"
-      style="width: 200px; height: 200px"
-    >
+  <q-page padding>
+    <div>
+      <q-btn
+        label="Search Patients"
+        no-caps
+        @click="
+          $router.push({
+            name: 'patients',
+          })
+        "
+      />
+    </div>
+    <ReceptionForm />
   </q-page>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  name: 'IndexPage'
-})
+<script setup>
+import ReceptionForm from "src/components/ReceptionForm.vue";
 </script>
