@@ -6,8 +6,8 @@
     <q-input label="Address" v-model.number="form.address" required />
     <q-input label="Phone" v-model.number="form.phone" required type="tel" />
     <div class="q-gutter-x-sm">
-      <q-radio v-model="form.gender" val="male" label="Male" />
-      <q-radio v-model="form.gender" val="female" label="Female" />
+      <q-radio v-model="form.gender" :val="0" label="Male" />
+      <q-radio v-model="form.gender" :val="1" label="Female" />
     </div>
     <div class="text-right q-mt-xs">
       <q-btn no-caps label="Submit" type="submit" />
@@ -16,24 +16,45 @@
 </template>
 
 <script setup>
+import { useQuasar } from "quasar";
+import useUtil from "src/composables/util";
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
-const form = ref({
+const { api } = useUtil();
+const { notify } = useQuasar();
+const { t } = useI18n();
+const defaultFormData = {
   name: "",
   age: "",
-  gender: "male",
+  gender: 0,
   address: "",
   phone: "",
-});
+};
+const form = ref(JSON.parse(JSON.stringify(defaultFormData)));
 
 const submit = () => {
-  router.push({
-    name: "record-visit",
-    params: {
-      patient: 1,
+  api(
+    {
+      url: "patients",
+      method: "POST",
+      data: {
+        name: form.value.name,
+        age: form.value.age,
+        gender: form.value.gender,
+        address: form.value.address,
+        phone: form.value.phone,
+      },
     },
+    true
+  ).then(() => {
+    notify({
+      message: t("success"),
+      type: "positive",
+    });
+    form.value = JSON.parse(JSON.stringify(defaultFormData));
   });
 };
 </script>

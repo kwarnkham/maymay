@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <q-page padding v-if="pagination">
     <q-form @submit.prevent="submit" class="row items-center">
       <q-input
         label="Search"
@@ -12,45 +12,33 @@
         <q-btn icon="search" />
       </div>
     </q-form>
+    <div class="q-my-xs">
+      <q-btn
+        icon="add"
+        class="full-width"
+        @click="
+          $router.push({
+            name: 'registerPatient',
+          })
+        "
+      />
+    </div>
     <div>
       <div class="text-center text-h6">Patients</div>
       <q-list bordered separator>
-        <q-item>
-          <q-item-section avatar>
-            <q-icon color="primary" name="male" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>U Mya</q-item-label>
-            <q-item-label caption>56</q-item-label>
-          </q-item-section>
-          <q-item-section>
-            <q-btn
-              icon="inventory"
-              no-caps
-              dense
-              @click="
-                $router.push({
-                  name: 'record-visit',
-                  params: {
-                    patient: 1,
-                  },
-                  query: {
-                    creating: '1',
-                  },
-                })
-              "
-            />
-          </q-item-section>
-          <q-item-section>
-            <q-btn icon="details" no-caps dense />
-          </q-item-section>
-        </q-item>
+        <PatientListItem
+          v-for="patient in pagination.data"
+          :key="patient.id"
+          :patient="patient"
+        />
       </q-list>
     </div>
   </q-page>
 </template>
 
 <script setup>
+import usePagination from "src/composables/pagination";
+import PatientListItem from "src/components/PatientListItem";
 import { ref } from "vue";
 
 const submit = () => {
@@ -59,4 +47,6 @@ const submit = () => {
 const form = ref({
   code: "",
 });
+
+const { pagination } = usePagination("patients");
 </script>

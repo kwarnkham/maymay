@@ -10,11 +10,6 @@ const routes = [
         name: 'index'
       },
       {
-        path: 'patient',
-        component: () => import('pages/PatientsPage.vue'),
-        name: 'patients'
-      },
-      {
         path: 'record-visit/:patient',
         component: () => import('pages/RecordVisit.vue'),
         name: 'record-visit'
@@ -29,6 +24,16 @@ const routes = [
         component: () => import('pages/LogoutPage.vue'),
         name: 'logout'
       },
+      {
+        path: 'patients',
+        component: () => import('pages/PatientsPage.vue'),
+        name: 'patients'
+      },
+      {
+        path: 'register-patient',
+        component: () => import('pages/RegisterPatient.vue'),
+        name: 'registerPatient'
+      }
     ]
   },
 

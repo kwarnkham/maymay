@@ -7,7 +7,8 @@ export default boot(({ app }) => {
   const i18n = createI18n({
     locale: LocalStorage.getItem('lang') ?? 'mm',
     globalInjection: true,
-    messages
+    messages,
+    legacy: false
   })
 
   // Set i18n instance on app

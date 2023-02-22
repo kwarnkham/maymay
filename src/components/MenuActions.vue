@@ -24,5 +24,9 @@ const menus = [
     name: "Logout",
     route: "logout",
   },
+  {
+    name: "Patients",
+    route: "patients",
+  },
 ];
 </script>
