@@ -9,5 +9,6 @@ export default {
   amount: "ပမာဏ",
   ok: "အဆင်ပြေသည်",
   cancel: "ပယ်ဖျက်မည်",
-  action: "လုပ်ဆောင်ချက်"
+  action: "လုပ်ဆောင်ချက်",
+  doYouWantToLogOut: "Log out လုပ်ချင်ပါသလား?"
 }

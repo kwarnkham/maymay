@@ -6,19 +6,28 @@ const routes = [
     children: [
       {
         path: '',
-        component: () => import('pages/IndexPage.vue'), name: 'index'
+        component: () => import('pages/IndexPage.vue'),
+        name: 'index'
       },
       {
         path: 'patient',
-        component: () => import('pages/PatientsPage.vue'), name: 'patients'
+        component: () => import('pages/PatientsPage.vue'),
+        name: 'patients'
       },
       {
         path: 'record-visit/:patient',
-        component: () => import('pages/RecordVisit.vue'), name: 'record-visit'
+        component: () => import('pages/RecordVisit.vue'),
+        name: 'record-visit'
       },
       {
         path: 'visit-details/:visit',
-        component: () => import('pages/VisitDetails.vue'), name: 'visit-details'
+        component: () => import('pages/VisitDetails.vue'),
+        name: 'visit-details'
+      },
+      {
+        path: 'logout',
+        component: () => import('pages/LogoutPage.vue'),
+        name: 'logout'
       },
     ]
   },

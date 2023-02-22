@@ -1,20 +1,13 @@
 <template>
   <q-page padding>
-    <div>
-      <q-btn
-        label="Search Patients"
-        no-caps
-        @click="
-          $router.push({
-            name: 'patients',
-          })
-        "
-      />
-    </div>
-    <ReceptionForm />
+    <MenuActions v-if="userStore.getUser">Logout</MenuActions>
+    <LoginForm v-else />
   </q-page>
 </template>
 
 <script setup>
-import ReceptionForm from "src/components/ReceptionForm.vue";
+import LoginForm from "src/components/LoginForm.vue";
+import MenuActions from "src/components/MenuActions.vue";
+import { useUserStore } from "src/stores/user-store";
+const userStore = useUserStore();
 </script>

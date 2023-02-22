@@ -2,6 +2,13 @@
 // so you can safely delete all default props below
 
 export default {
-  failed: 'Action failed',
-  success: 'Action was successful'
+  description: 'description',
+  price: 'price',
+  quantity: "quantity",
+  qty: "qty",
+  amount: "amount",
+  ok: "ok",
+  cancel: "cancel",
+  action: "action",
+  doYouWantToLogOut: "Do you want to log out?"
 }
