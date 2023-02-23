@@ -2,7 +2,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import useUtil from "./util";
 
-export default function usePagination (url) {
+export default function usePagination (url, params) {
   const route = useRoute();
   const router = useRouter();
   const pagination = ref(null);
@@ -41,13 +41,22 @@ export default function usePagination (url) {
     });
   };
 
-  onMounted(() => {
-    let query = JSON.parse(JSON.stringify(route.query))
+  const fetch = (query) => {
     fetcher(query).then((response) => {
       pagination.value = response.data.data;
       current.value = response.data.data.current_page;
       total.value = response.data.total
     });
+  }
+
+  onMounted(() => {
+    let query = JSON.parse(JSON.stringify(route.query))
+    if (params) query = { ...query, ...params }
+    router.replace({
+      name: route.name,
+      query: query
+    })
+    fetch(query)
   })
 
   watch(current, () => {
@@ -64,5 +73,6 @@ export default function usePagination (url) {
     max,
     current,
     total,
+    fetch
   }
 }
