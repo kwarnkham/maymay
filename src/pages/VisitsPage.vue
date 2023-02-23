@@ -41,15 +41,12 @@
         </q-item>
       </template>
     </q-list>
-    <div
-      class="row justify-center full-width"
-      :class="{
-        hidden:
-          pagination.current_page == 1 && pagination?.next_page_url == null,
-      }"
-    >
-      <q-pagination v-model="current" :max="max" input />
-    </div>
+    <AppPagination
+      :pagination="pagination"
+      :max="max"
+      v-if="pagination"
+      v-model="current"
+    />
   </q-page>
 </template>
 
@@ -59,6 +56,7 @@ import useUtil from "src/composables/util";
 import { ref, watch, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { debounce } from "quasar";
+import AppPagination from "src/components/AppPagination.vue";
 
 const route = useRoute();
 const router = useRouter();

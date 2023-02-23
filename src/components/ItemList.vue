@@ -1,5 +1,5 @@
 <template>
-  <div v-if="pagination">
+  <div v-if="pagination" class="column no-wrap item-list">
     <div>
       <q-input v-model="search" :label="$t('search')" />
     </div>
@@ -24,6 +24,12 @@
         </q-item>
       </template>
     </q-list>
+    <AppPagination
+      :pagination="pagination"
+      v-model="current"
+      :max="max"
+      v-if="pagination"
+    />
   </div>
 </template>
 
@@ -32,8 +38,9 @@ import { debounce } from "quasar";
 import usePagination from "src/composables/pagination";
 import { ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import AppPagination from "./AppPagination.vue";
 
-const { pagination, fetch, current } = usePagination("items");
+const { pagination, fetch, current, max } = usePagination("items");
 
 const route = useRoute();
 const router = useRouter();
@@ -54,3 +61,9 @@ watch(
   }, 800)
 );
 </script>
+
+<style scoped lang="scss">
+.item-list {
+  height: 500px;
+}
+</style>
