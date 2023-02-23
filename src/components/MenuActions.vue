@@ -36,5 +36,9 @@ const menus = [
     name: "Item",
     route: "item",
   },
+  {
+    name: "Product",
+    route: "product",
+  },
 ];
 </script>

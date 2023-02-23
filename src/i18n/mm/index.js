@@ -24,7 +24,8 @@ export default {
   search: "ရှာရန်",
   salePrice: "ရောင်းစျေး",
   addANewProduct: "ပစ္စည်းအသစ်ထည့်ရန်",
-  editItem: "ပစ္စည်း အမျိုးအစား ပြင်ရန်"
-
-
+  editItem: "ပစ္စည်း အမျိုးအစား ပြင်ရန်",
+  purchaseProduct: "ပစ္စည်းအဝယ်",
+  purchasedPrice: "ဝယ်စျေး",
+  stock: "လက်ကျန်"
 }

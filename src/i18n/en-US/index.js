@@ -24,5 +24,8 @@ export default {
   search: "Search",
   salePrice: "Sale price",
   addANewProduct: "Add a new product",
-  editItem: "Edit Item"
+  editItem: "Edit Item",
+  purchaseProduct: "Purchase product",
+  purchasedPrice: "Purchased pirce",
+  stock: "Stock"
 }

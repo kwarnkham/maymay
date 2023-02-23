@@ -2,8 +2,15 @@
   <q-form @submit.prevent="submit">
     <div class="text-center text-h6">Reception Form</div>
     <q-input label="Name" v-model="form.name" required autofocus />
-    <q-input label="Age" v-model.number="form.age" required type="tel" />
-    <q-input label="Address" v-model.number="form.address" required />
+    <q-input
+      label="Age"
+      v-model.number="form.age"
+      required
+      type="number"
+      pattern="[0-9]*"
+      inputmode="numeric"
+    />
+    <q-input label="Address" v-model="form.address" required />
     <q-input label="Phone" v-model="form.phone" required type="tel" />
     <div class="q-gutter-x-sm">
       <q-radio v-model="form.gender" :val="0" label="Male" />
