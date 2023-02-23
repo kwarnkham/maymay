@@ -21,5 +21,8 @@ export default {
   description: "အကြောင်းအရာ",
   addANewItem: 'ပစ္စည်း အမျိုးအစား အသစ် ထည့်ရန်',
   itemList: 'ပစ္စည်း အမျိုးအစားများ',
-  search: "ရှာရန်"
+  search: "ရှာရန်",
+  salePrice: "ရောင်းစျေး",
+  addANewProduct: "ပစ္စည်းအသစ်ထည့်ရန်"
+
 }

@@ -21,6 +21,8 @@ export default {
   description: "Description",
   addANewItem: 'Add a new item',
   itemList: 'Item list',
-  search: "Search"
+  search: "Search",
+  salePrice: "Sale price",
+  addANewProduct: "Add a new product"
 
 }

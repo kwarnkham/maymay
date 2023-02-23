@@ -1,5 +1,5 @@
 <template>
-  <q-form @submit="submit">
+  <q-form @submit.prevent="submit">
     <div class="text-h5 text-center">Login</div>
     <q-input
       v-model="form.username"

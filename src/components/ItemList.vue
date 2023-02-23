@@ -5,20 +5,15 @@
     </div>
     <q-list bordered separator class="full-width col overflow-auto">
       <template v-for="item in pagination.data" :key="item.id">
-        <q-item
-          clickable
-          v-ripple
-          :to="{
-            name: 'item-details',
-            params: {
-              item: item.id,
-            },
-          }"
-        >
+        <q-item>
           <q-item-section>
             <q-item-label> {{ item.name }} </q-item-label>
             <q-item-label caption lines="2" v-if="item.description">
               {{ item.description }}
+            </q-item-label>
+            <q-item-label class="row justify-around">
+              <q-btn icon="add" @click="showProductFormDialog(item.id)" />
+              <q-btn icon="launch" />
             </q-item-label>
           </q-item-section>
         </q-item>
@@ -34,17 +29,19 @@
 </template>
 
 <script setup>
-import { debounce } from "quasar";
+import { debounce, useQuasar } from "quasar";
 import usePagination from "src/composables/pagination";
 import { ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import AppPagination from "./AppPagination.vue";
+import ProductFormDialog from "./ProductFormDialog.vue";
 
 const { pagination, fetch, current, max } = usePagination("items");
 
 const route = useRoute();
 const router = useRouter();
 const search = ref(route.query.search ?? "");
+const { dialog } = useQuasar();
 
 watch(
   search,
@@ -60,6 +57,15 @@ watch(
     });
   }, 800)
 );
+
+const showProductFormDialog = (item_id) => {
+  dialog({
+    component: ProductFormDialog,
+    componentProps: {
+      item_id,
+    },
+  });
+};
 </script>
 
 <style scoped lang="scss">

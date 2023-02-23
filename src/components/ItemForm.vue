@@ -1,5 +1,5 @@
 <template>
-  <q-form @submit="submit">
+  <q-form @submit.prevent="submit">
     <q-input v-model="formData.name" required :label="$t('name')" />
     <q-input
       v-model="formData.description"
