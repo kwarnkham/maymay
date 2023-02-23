@@ -26,14 +26,17 @@ const formData = ref({
 const { api } = useUtil();
 const { t } = useI18n();
 const submit = () => {
-  api({
-    method: "POST",
-    url: "items",
-    data: {
-      name: formData.value.name,
-      description: formData.value.description,
+  api(
+    {
+      method: "POST",
+      url: "items",
+      data: {
+        name: formData.value.name,
+        description: formData.value.description,
+      },
     },
-  }).then(() => {
+    true
+  ).then(() => {
     notify({
       message: t("success"),
       type: "positive",

@@ -13,6 +13,7 @@
             </q-item-label>
             <q-item-label class="row justify-around">
               <q-btn icon="add" @click="showProductFormDialog(item.id)" />
+              <q-btn icon="edit" @click="showItemFormDialog(item)" />
               <q-btn icon="launch" />
             </q-item-label>
           </q-item-section>
@@ -34,6 +35,7 @@ import usePagination from "src/composables/pagination";
 import { ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import AppPagination from "./AppPagination.vue";
+import ItemFormDialog from "./ItemFormDialog.vue";
 import ProductFormDialog from "./ProductFormDialog.vue";
 
 const { pagination, fetch, current, max } = usePagination("items");
@@ -64,6 +66,21 @@ const showProductFormDialog = (item_id) => {
     componentProps: {
       item_id,
     },
+  });
+};
+
+const showItemFormDialog = (item) => {
+  dialog({
+    component: ItemFormDialog,
+    componentProps: {
+      item,
+    },
+  }).onOk((value) => {
+    pagination.value.data.splice(
+      pagination.value.data.findIndex((e) => e.id == value.id),
+      1,
+      value
+    );
   });
 };
 </script>

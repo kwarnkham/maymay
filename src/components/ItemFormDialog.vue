@@ -11,21 +11,13 @@
       </div>
       <q-form @submit.prevent="submit">
         <div class="text-center text-h5">
-          {{ $t("addANewProduct") }}
+          {{ $t("editItem") }}
         </div>
         <q-input v-model="formData.name" required :label="$t('name')" />
         <q-input
           v-model="formData.description"
           type="textarea"
           :label="$t('description')"
-        />
-        <q-input
-          v-model.number="formData.sale_price"
-          required
-          :label="$t('salePrice')"
-          type="number"
-          pattern="[0-9]*"
-          inputmode="numeric"
         />
         <div class="text-right">
           <q-btn icon="save" type="submit" />
@@ -42,8 +34,8 @@ import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 const props = defineProps({
-  item_id: {
-    type: Number,
+  item: {
+    type: Object,
     required: true,
   },
 });
@@ -58,27 +50,24 @@ const { t } = useI18n();
 const submit = () => {
   api(
     {
-      method: "POST",
-      url: "products",
+      method: "PUT",
+      url: "items/" + props.item.id,
       data: {
         name: formData.value.name,
         description: formData.value.description,
-        sale_price: formData.value.sale_price,
-        item_id: props.item_id,
       },
     },
     true
-  ).then(() => {
+  ).then((response) => {
     notify({
       message: t("success"),
       type: "positive",
     });
-    onDialogOK();
+    onDialogOK(response.data.item);
   });
 };
 const formData = ref({
-  name: "",
-  description: "",
-  sale_price: "",
+  name: props.item.name,
+  description: props.item.description,
 });
 </script>

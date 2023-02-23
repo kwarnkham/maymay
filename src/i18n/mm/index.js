@@ -23,6 +23,8 @@ export default {
   itemList: 'ပစ္စည်း အမျိုးအစားများ',
   search: "ရှာရန်",
   salePrice: "ရောင်းစျေး",
-  addANewProduct: "ပစ္စည်းအသစ်ထည့်ရန်"
+  addANewProduct: "ပစ္စည်းအသစ်ထည့်ရန်",
+  editItem: "ပစ္စည်း အမျိုးအစား ပြင်ရန်"
+
 
 }

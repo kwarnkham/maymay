@@ -23,6 +23,6 @@ export default {
   itemList: 'Item list',
   search: "Search",
   salePrice: "Sale price",
-  addANewProduct: "Add a new product"
-
+  addANewProduct: "Add a new product",
+  editItem: "Edit Item"
 }
