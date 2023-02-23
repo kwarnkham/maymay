@@ -56,6 +56,14 @@ const routes = [
         meta: {
           requiresAuth: true
         }
+      },
+      {
+        path: 'visits/:visit',
+        component: () => import('pages/VisitDetails.vue'),
+        name: 'visit-details',
+        meta: {
+          requiresAuth: true
+        }
       }
     ]
   },

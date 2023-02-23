@@ -16,4 +16,6 @@ export default {
   doYouWantToAddBookFees: 'Do you want to add book fees?',
   addBookFees: 'Add book fees',
   doNotAddBookFees: 'Do not add book fees',
+  name: "Name",
+  age: "Age"
 }

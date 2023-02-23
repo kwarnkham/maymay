@@ -7,7 +7,7 @@
     <div class="row justify-between">
       <div><q-icon name="person" /> {{ visit.patient.name }}</div>
       <div>
-        {{ $t("age") }}: {{ visit.patient.age }}
+        Age: {{ visit.patient.age }}
         <q-icon
           :name="visit.patient.gender ? 'female' : 'male'"
           :color="visit.patient.gender ? 'accent' : 'primary'"
@@ -17,9 +17,6 @@
     <div class="row justify-between">
       <div><q-icon name="phone" /> {{ visit.patient.phone }}</div>
       <div><q-icon name="location_pin" /> {{ visit.patient.address }}</div>
-    </div>
-    <div class="q-my-xs row">
-      <q-btn icon="add" class="col" />
     </div>
     <q-markup-table separator="cell" flat bordered wrap-cells>
       <thead>
@@ -47,7 +44,7 @@
           <td class="text-right">
             {{
               (
-                (product.pivot.sale_price - (product.pivot.discount ?? 0)) *
+                (product.pivot.price - (product.pivot.discount ?? 0)) *
                   product.pivot.quantity || "FOC"
               ).toLocaleString()
             }}

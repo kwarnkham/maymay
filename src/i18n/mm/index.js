@@ -16,4 +16,6 @@ export default {
   doYouWantToAddBookFees: 'စာအုပ်ဖိုးပါသလား?',
   addBookFees: 'စာအုပ်ဖိုးထည့်မည်',
   doNotAddBookFees: 'စာအုပ်ဖိုးမထည့်ပါ',
+  name: "အမည်",
+  age: "အသက်"
 }

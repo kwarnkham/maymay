@@ -10,7 +10,16 @@
     </div>
     <q-list bordered separator class="full-width col overflow-auto">
       <template v-for="visit in pagination.data" :key="visit.id">
-        <q-item clickable v-ripple>
+        <q-item
+          clickable
+          v-ripple
+          :to="{
+            name: 'visit-details',
+            params: {
+              visit: visit.id,
+            },
+          }"
+        >
           <q-item-section>
             <q-item-label>
               <q-icon name="person" /> {{ visit.patient.name }}
