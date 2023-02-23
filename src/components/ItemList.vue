@@ -14,7 +14,17 @@
             <q-item-label class="row justify-around">
               <q-btn icon="add" @click="showProductFormDialog(item.id)" />
               <q-btn icon="edit" @click="showItemFormDialog(item)" />
-              <q-btn icon="launch" />
+              <q-btn
+                icon="launch"
+                @click="
+                  $router.push({
+                    name: 'item-details',
+                    params: {
+                      item: item.id,
+                    },
+                  })
+                "
+              />
             </q-item-label>
           </q-item-section>
         </q-item>
@@ -30,35 +40,17 @@
 </template>
 
 <script setup>
-import { debounce, useQuasar } from "quasar";
+import { useQuasar } from "quasar";
 import usePagination from "src/composables/pagination";
-import { ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import useSearchFilter from "src/composables/searchFilter";
 import AppPagination from "./AppPagination.vue";
 import ItemFormDialog from "./ItemFormDialog.vue";
 import ProductFormDialog from "./ProductFormDialog.vue";
 
 const { pagination, fetch, current, max } = usePagination("items");
+const { search } = useSearchFilter({ current, fetch });
 
-const route = useRoute();
-const router = useRouter();
-const search = ref(route.query.search ?? "");
 const { dialog } = useQuasar();
-
-watch(
-  search,
-  debounce(() => {
-    const options = {
-      name: route.name,
-      query: {},
-    };
-    if (search.value) options.query.search = search.value;
-    router.replace(options).then(() => {
-      if (current.value == 1) fetch(options.query);
-      else current.value = 1;
-    });
-  }, 800)
-);
 
 const showProductFormDialog = (item_id) => {
   dialog({

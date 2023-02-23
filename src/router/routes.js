@@ -64,6 +64,14 @@ const routes = [
         meta: {
           requiresAuth: true
         }
+      },
+      {
+        path: 'item/:item',
+        component: () => import('pages/ItemDetails.vue'),
+        name: 'item-details',
+        meta: {
+          requiresAuth: true
+        }
       }
     ]
   },
