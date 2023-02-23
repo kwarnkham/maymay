@@ -1,6 +1,6 @@
 <template>
   <q-form @submit.prevent="submit">
-    <q-input v-model="formData.name" required :label="$t('name')" />
+    <q-input v-model="formData.name" required :label="$t('name')" autofocus />
     <q-input
       v-model="formData.description"
       :label="$t('description')"

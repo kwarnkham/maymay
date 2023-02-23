@@ -44,7 +44,7 @@ import { useRoute } from "vue-router";
 const item = ref(null);
 const { api, vhPage } = useUtil();
 const route = useRoute();
-const { dialog } = useQuasar;
+const { dialog } = useQuasar();
 
 const { pagination, current, max, fetch } = usePagination("products", {
   item_id: route.params.item,
@@ -61,6 +61,8 @@ const showProductFormDialog = () => {
     componentProps: {
       item_id: route.params.item,
     },
+  }).onOk((product) => {
+    pagination.value.data.unshift(product);
   });
 };
 onMounted(() => {

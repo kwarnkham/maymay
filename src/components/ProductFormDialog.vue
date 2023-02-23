@@ -13,7 +13,12 @@
         <div class="text-center text-h5">
           {{ $t("addANewProduct") }}
         </div>
-        <q-input v-model="formData.name" required :label="$t('name')" />
+        <q-input
+          v-model="formData.name"
+          required
+          :label="$t('name')"
+          autofocus
+        />
         <q-input
           v-model="formData.description"
           type="textarea"
@@ -68,12 +73,12 @@ const submit = () => {
       },
     },
     true
-  ).then(() => {
+  ).then((response) => {
     notify({
       message: t("success"),
       type: "positive",
     });
-    onDialogOK();
+    onDialogOK(response.data.product);
   });
 };
 const formData = ref({

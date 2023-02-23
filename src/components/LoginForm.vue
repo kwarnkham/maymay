@@ -2,6 +2,7 @@
   <q-form @submit.prevent="submit">
     <div class="text-h5 text-center">Login</div>
     <q-input
+      autofocus
       v-model="form.username"
       required
       autocomplete="username"
