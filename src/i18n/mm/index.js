@@ -11,5 +11,9 @@ export default {
   cancel: "ပယ်ဖျက်မည်",
   action: "လုပ်ဆောင်ချက်",
   doYouWantToLogOut: "Log out လုပ်ချင်ပါသလား?",
-  success: "အောင်မြင်သည်"
+  success: "အောင်မြင်သည်",
+  bookFees: 'စာအုပ်ဖိုး',
+  doYouWantToAddBookFees: 'စာအုပ်ဖိုးပါသလား?',
+  addBookFees: 'စာအုပ်ဖိုးထည့်မည်',
+  doNotAddBookFees: 'စာအုပ်ဖိုးမထည့်ပါ',
 }

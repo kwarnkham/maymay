@@ -36,14 +36,17 @@ const form = ref({
 const userStore = useUserStore();
 
 const submit = () => {
-  api({
-    method: "POST",
-    url: "login",
-    data: {
-      username: form.value.username,
-      password: form.value.password,
+  api(
+    {
+      method: "POST",
+      url: "login",
+      data: {
+        username: form.value.username,
+        password: form.value.password,
+      },
     },
-  }).then((response) => {
+    true
+  ).then((response) => {
     localStorage.set("token", response.data.token);
     userStore.setUser(response.data.user);
     axios.defaults.headers.common["Authorization"] =

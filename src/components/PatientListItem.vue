@@ -20,6 +20,8 @@
 </template>
 
 <script setup>
+import { useQuasar } from "quasar";
+import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 
 const props = defineProps({
@@ -29,13 +31,33 @@ const props = defineProps({
   },
 });
 
+const { dialog } = useQuasar();
+const { t } = useI18n();
+
 const router = useRouter();
 const recordVisit = () => {
-  router.push({
-    name: "record-visit",
-    params: {
-      patient: props.patient.id,
+  dialog({
+    title: t("bookFees"),
+    message: t("doYouWantToAddBookFees"),
+    cancel: true,
+    noBackdropDismiss: true,
+    ok: {
+      label: "Yes",
+      noCaps: true,
     },
-  });
+    cancel: {
+      label: "No",
+      noCaps: true,
+    },
+  })
+    .onOk(() => {
+      router.push({
+        name: "record-visit",
+        params: {
+          patient: props.patient.id,
+        },
+      });
+    })
+    .onCancel(() => {});
 };
 </script>

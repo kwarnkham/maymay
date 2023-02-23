@@ -7,32 +7,55 @@ const routes = [
       {
         path: '',
         component: () => import('pages/IndexPage.vue'),
-        name: 'index'
+        name: 'index',
       },
       {
         path: 'record-visit/:patient',
         component: () => import('pages/RecordVisit.vue'),
-        name: 'record-visit'
+        name: 'record-visit',
+        meta: {
+          requiresAuth: true
+        }
       },
       {
         path: 'visit-details/:visit',
         component: () => import('pages/VisitDetails.vue'),
-        name: 'visit-details'
+        name: 'visit-details',
+        meta: {
+          requiresAuth: true
+        }
       },
       {
         path: 'logout',
         component: () => import('pages/LogoutPage.vue'),
-        name: 'logout'
+        name: 'logout',
+        meta: {
+          requiresAuth: true
+        }
       },
       {
         path: 'patients',
         component: () => import('pages/PatientsPage.vue'),
-        name: 'patients'
+        name: 'patients',
+        meta: {
+          requiresAuth: true
+        }
       },
       {
         path: 'register-patient',
         component: () => import('pages/RegisterPatient.vue'),
-        name: 'registerPatient'
+        name: 'registerPatient',
+        meta: {
+          requiresAuth: true
+        }
+      },
+      {
+        path: 'visits',
+        component: () => import('pages/VisitsPage.vue'),
+        name: 'visits',
+        meta: {
+          requiresAuth: true
+        }
       }
     ]
   },

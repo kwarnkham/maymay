@@ -11,5 +11,9 @@ export default {
   cancel: "Cancel",
   action: "Action",
   doYouWantToLogOut: "Do you want to log out?",
-  success: "Success"
+  success: "Success",
+  bookFees: 'Book Fees',
+  doYouWantToAddBookFees: 'Do you want to add book fees?',
+  addBookFees: 'Add book fees',
+  doNotAddBookFees: 'Do not add book fees',
 }

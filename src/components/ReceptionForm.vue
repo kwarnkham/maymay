@@ -4,10 +4,22 @@
     <q-input label="Name" v-model="form.name" required />
     <q-input label="Age" v-model.number="form.age" required type="tel" />
     <q-input label="Address" v-model.number="form.address" required />
-    <q-input label="Phone" v-model.number="form.phone" required type="tel" />
+    <q-input label="Phone" v-model="form.phone" required type="tel" />
     <div class="q-gutter-x-sm">
       <q-radio v-model="form.gender" :val="0" label="Male" />
       <q-radio v-model="form.gender" :val="1" label="Female" />
+    </div>
+    <div class="q-gutter-x-sm">
+      <q-radio
+        v-model="form.with_book_fees"
+        :val="0"
+        :label="$t('doNotAddBookFees')"
+      />
+      <q-radio
+        v-model="form.with_book_fees"
+        :val="1"
+        :label="$t('addBookFees')"
+      />
     </div>
     <div class="text-right q-mt-xs">
       <q-btn no-caps label="Submit" type="submit" />
@@ -29,9 +41,10 @@ const { t } = useI18n();
 const defaultFormData = {
   name: "",
   age: "",
-  gender: 0,
+  gender: 1,
   address: "",
   phone: "",
+  with_book_fees: 1,
 };
 const form = ref(JSON.parse(JSON.stringify(defaultFormData)));
 
@@ -46,6 +59,7 @@ const submit = () => {
         gender: form.value.gender,
         address: form.value.address,
         phone: form.value.phone,
+        with_book_fees: form.value.with_book_fees,
       },
     },
     true

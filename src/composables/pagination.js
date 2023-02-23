@@ -14,6 +14,7 @@ export default function usePagination (url) {
   );
 
   const fetcher = (params) => {
+    if (!params.per_page) params.per_page = 30;
     return new Promise((resolve, reject) => {
       api({
         method: "GET",
@@ -32,6 +33,11 @@ export default function usePagination (url) {
     fetcher(query).then((response) => {
       pagination.value = response.data.data;
       total.value = response.data.total
+
+      const el = document.getElementsByClassName('q-list overflow-auto');
+      if (el) {
+        el[0]?.children[0]?.scrollIntoView()
+      }
     });
   };
 
