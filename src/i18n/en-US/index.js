@@ -17,5 +17,10 @@ export default {
   addBookFees: 'Add book fees',
   doNotAddBookFees: 'Do not add book fees',
   name: "Name",
-  age: "Age"
+  age: "Age",
+  description: "Description",
+  addANewItem: 'Add a new item',
+  itemList: 'Item list',
+  search: "Search"
+
 }

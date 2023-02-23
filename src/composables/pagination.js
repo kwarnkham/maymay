@@ -14,7 +14,7 @@ export default function usePagination (url, params) {
   );
 
   const fetcher = (params) => {
-    if (!params.per_page) params.per_page = 30;
+    if (!params?.per_page) params.per_page = 30;
     return new Promise((resolve, reject) => {
       api({
         method: "GET",

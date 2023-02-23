@@ -18,14 +18,6 @@ const routes = [
         }
       },
       {
-        path: 'visit-details/:visit',
-        component: () => import('pages/VisitDetails.vue'),
-        name: 'visit-details',
-        meta: {
-          requiresAuth: true
-        }
-      },
-      {
         path: 'logout',
         component: () => import('pages/LogoutPage.vue'),
         name: 'logout',
@@ -61,6 +53,14 @@ const routes = [
         path: 'visits/:visit',
         component: () => import('pages/VisitDetails.vue'),
         name: 'visit-details',
+        meta: {
+          requiresAuth: true
+        }
+      },
+      {
+        path: 'item',
+        component: () => import('pages/ItemPage.vue'),
+        name: 'item',
         meta: {
           requiresAuth: true
         }

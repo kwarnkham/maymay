@@ -17,5 +17,9 @@ export default {
   addBookFees: 'စာအုပ်ဖိုးထည့်မည်',
   doNotAddBookFees: 'စာအုပ်ဖိုးမထည့်ပါ',
   name: "အမည်",
-  age: "အသက်"
+  age: "အသက်",
+  description: "အကြောင်းအရာ",
+  addANewItem: 'ပစ္စည်း အမျိုးအစား အသစ် ထည့်ရန်',
+  itemList: 'ပစ္စည်း အမျိုးအစားများ',
+  search: "ရှာရန်"
 }
