@@ -29,7 +29,8 @@ module.exports = configure(function (ctx) {
       'i18n',
       'axios',
       'quasar-lang-pack',
-      'router-auth'
+      'router-auth',
+      'bus'
     ],
 
     // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-css

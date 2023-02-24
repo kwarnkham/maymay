@@ -26,7 +26,13 @@
         @click="showProductSearchingDialog"
       />
     </div>
-    <q-markup-table separator="cell" flat bordered wrap-cells>
+    <q-markup-table
+      separator="cell"
+      flat
+      bordered
+      wrap-cells
+      v-if="products.length"
+    >
       <thead>
         <tr>
           <th class="text-left">#</th>
@@ -37,35 +43,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(product, key) in visit.products" :key="product.id">
+        <tr v-for="(product, key) in products" :key="product.id">
           <td class="text-left">{{ key + 1 }}</td>
-          <td class="text-left">{{ product.name }}</td>
-          <td class="text-right">
-            {{
-              (
-                product.pivot.sale_price - (product.pivot.discount ?? 0) ||
-                "FOC"
-              ).toLocaleString()
-            }}
+          <td class="text-left">
+            <span @click="removeFromVisit(product)">{{ product.name }}</span>
           </td>
-          <td class="text-right">{{ product.pivot.quantity }}</td>
-          <td class="text-right">
-            {{
-              (
-                (product.pivot.sale_price - (product.pivot.discount ?? 0)) *
-                  product.pivot.quantity || "FOC"
-              ).toLocaleString()
-            }}
-          </td>
-        </tr>
-
-        <tr
-          v-for="(product, key) in cartStore.getProducts"
-          :key="product.id"
-          class="text-primary"
-        >
-          <td class="text-left">{{ key + 1 + visit.products.length }}</td>
-          <td class="text-left">{{ product.name }}</td>
           <td class="text-right">
             <span
               @click="applyDiscount(product)"
@@ -93,34 +75,20 @@
           <td colspan="3" class="text-right">Total</td>
           <td class="text-right">
             {{
-              visit.products.reduce(
-                (carry, product) => carry + product.pivot.quantity,
-                0
-              ) +
-              cartStore.getProducts.reduce(
-                (carry, product) => carry + product.quantity,
-                0
-              )
+              products.reduce((carry, product) => carry + product.quantity, 0)
             }}
           </td>
           <td class="text-right">
             {{
-              (
-                visit.products.reduce(
-                  (carry, product) =>
-                    carry +
-                    (product.pivot.sale_price -
-                      product.pivot.discount * product.pivot.quantity),
-                  0
-                ) +
-                cartStore.getProducts.reduce(
+              products
+                .reduce(
                   (carry, product) =>
                     carry +
                     (product.sale_price - (product.discount ?? 0)) *
                       product.quantity,
                   0
                 )
-              ).toLocaleString()
+                .toLocaleString()
             }}
           </td>
         </tr>
@@ -128,7 +96,7 @@
           <td colspan="3"></td>
           <td class="text-right">Discount</td>
           <td class="text-right">
-            {{ (visit.discount + cartStore.getCart.discount).toLocaleString() }}
+            {{ discount.toLocaleString() }}
           </td>
         </tr>
         <tr>
@@ -137,16 +105,13 @@
           <td class="text-right">
             {{
               (
-                visit.amount +
-                  cartStore.getProducts.reduce(
-                    (carry, product) =>
-                      carry +
-                      (product.sale_price - (product.discount ?? 0)) *
-                        product.quantity,
-                    0
-                  ) -
-                  visit.discount -
-                  cartStore.getCart.discount || "FOC"
+                products.reduce(
+                  (carry, product) =>
+                    carry +
+                    (product.sale_price - (product.discount ?? 0)) *
+                      product.quantity,
+                  0
+                ) - discount || "FOC"
               ).toLocaleString()
             }}
           </td>
@@ -160,19 +125,54 @@
 import { useQuasar } from "quasar";
 import ProductSearchingDialog from "src/components/ProductSearchingDialog.vue";
 import useUtil from "src/composables/util";
-import { useCartStore } from "src/stores/cart-store";
-import { onMounted, ref } from "vue";
+import { inject, onMounted, ref, onBeforeUnmount } from "vue";
 import { useRoute } from "vue-router";
 
-const cartStore = useCartStore();
 const route = useRoute();
 const { api } = useUtil();
 const visit = ref(null);
-const { dialog } = useQuasar();
+const { dialog, notify } = useQuasar();
+const bus = inject("bus");
+const products = ref([]);
+const discount = ref(0);
+
 const showProductSearchingDialog = () => {
   dialog({
     component: ProductSearchingDialog,
+    componentProps: {
+      products: products.value,
+    },
   });
+};
+
+const removeFromVisit = (product) => {
+  dialog({
+    title: "Confirm",
+    message: "Do you want to remove the product, " + product.name,
+    noBackdropDismiss: true,
+    cancel: true,
+  }).onOk(() => {
+    products.value.splice(
+      products.value.findIndex((e) => e.id == product),
+      1
+    );
+  });
+};
+const addToVisit = (product) => {
+  const addedQuantity = products.value.find(
+    (e) => e.id == product.id
+  )?.quantity;
+
+  if (addedQuantity && addedQuantity + 1 > product.stock) {
+    notify({
+      message: "No enough stock",
+      type: "warning",
+    });
+    return;
+  }
+  const existed = products.value.findIndex((e) => e.id == product.id);
+  if (existed == -1) products.value.push({ ...product, quantity: 1 });
+  else products.value[existed].quantity += 1;
 };
 
 const applyDiscount = (product) => {
@@ -191,11 +191,11 @@ const applyDiscount = (product) => {
     cancel: true,
   }).onOk((val) => {
     const discount = product.sale_price - val;
-
-    cartStore.updateProduct({
+    const index = products.value.findIndex((e) => e.id == product.id);
+    products.value[index] = {
       ...product,
       discount: discount > 0 ? discount : undefined,
-    });
+    };
   });
 };
 onMounted(() => {
@@ -204,6 +204,17 @@ onMounted(() => {
     url: "visits/" + route.params.visit,
   }).then((response) => {
     visit.value = response.data.visit;
+    products.value = visit.value.products.map((product) => ({
+      ...product,
+      quantity: product.pivot.quantity,
+      discount: product.pivot.discount,
+    }));
   });
+
+  bus.on("addToVisit", addToVisit);
+});
+
+onBeforeUnmount(() => {
+  bus.off("addToVisit", addToVisit);
 });
 </script>

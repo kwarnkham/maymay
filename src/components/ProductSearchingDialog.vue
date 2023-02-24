@@ -18,18 +18,14 @@
       </div>
       <div class="row justify-around q-mt-sm q-gutter-y-sm">
         <q-btn
-          :outline="
-            cartStore.getProducts.findIndex((e) => e.id == product.id) != -1
-          "
-          :flat="
-            cartStore.getProducts.findIndex((e) => e.id == product.id) == -1
-          "
+          :outline="products.findIndex((e) => e.id == product.id) != -1"
+          :flat="products.findIndex((e) => e.id == product.id) == -1"
           :label="product.name"
           v-for="product in products"
           :key="product.id"
           no-caps
           :color="product.stock > 0 ? 'primary' : 'negative'"
-          @click="addToCart(product)"
+          @click="addToVisit(product)"
           :disabled="product.stock <= 0"
         >
           <q-badge floating>{{ product.stock }} </q-badge>
@@ -43,9 +39,17 @@
 import { debounce, useDialogPluginComponent, useQuasar } from "quasar";
 import useUtil from "src/composables/util";
 import { ref, watch } from "vue";
-import { useCartStore } from "src/stores/cart-store";
+import { inject } from "vue";
 
+const bus = inject("bus");
 defineEmits([...useDialogPluginComponent.emits]);
+
+const props = defineProps({
+  products: {
+    type: Array,
+    required: true,
+  },
+});
 
 const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } =
   useDialogPluginComponent();
@@ -53,7 +57,6 @@ const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } =
 const search = ref("");
 const { api } = useUtil();
 const products = ref([]);
-const cartStore = useCartStore();
 const { notify } = useQuasar();
 watch(
   search,
@@ -73,19 +76,8 @@ watch(
   }, 800)
 );
 
-const addToCart = (product) => {
-  const addedQuantity = cartStore.getProducts.find(
-    (e) => e.id == product.id
-  )?.quantity;
-
-  if (addedQuantity && addedQuantity + 1 > product.stock) {
-    notify({
-      message: "No enough stock",
-      type: "warning",
-    });
-    return;
-  }
-  cartStore.addProduct({ product, quantity: 1 });
+const addToVisit = (product) => {
+  bus.emit("addToVisit", product);
 };
 </script>
 

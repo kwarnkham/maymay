@@ -42,7 +42,6 @@ export const useCartStore = defineStore('cart', {
       this.cart.products[index] = product
       LocalStorage.set('products', this.cart.products)
     },
-
     clear () {
       this.cart.products = []
       this.cart.discount = 0
