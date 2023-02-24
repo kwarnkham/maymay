@@ -23,6 +23,7 @@
       class="col"
       :purchasable_id="product.id"
       type="App\Models\Product"
+      @product:updated="updateProduct"
     />
   </q-page>
 </template>
@@ -49,15 +50,23 @@ onMounted(() => {
   });
 });
 
-const showProductPurchaseForm = (product) => {
+const showProductPurchaseForm = (productToBePurchased) => {
   showProductList.value = false;
   dialog({
     component: ProductPurchaseFormDialog,
     componentProps: {
-      product,
+      product: productToBePurchased,
     },
-  }).onDismiss(() => {
-    showProductList.value = true;
-  });
+  })
+    .onDismiss(() => {
+      showProductList.value = true;
+    })
+    .onOk((value) => {
+      product.value = value;
+    });
+};
+
+const updateProduct = (value) => {
+  product.value = value;
 };
 </script>

@@ -46,7 +46,7 @@ import useSearchFilter from "src/composables/searchFilter";
 
 const props = defineProps({
   item_id: {
-    type: Number,
+    type: Number || String,
     required: false,
   },
 });

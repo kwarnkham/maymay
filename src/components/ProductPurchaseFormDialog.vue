@@ -84,7 +84,7 @@ const submit = () => {
       message: t("success"),
       type: "positive",
     });
-    onDialogOK(response.data.purchase);
+    onDialogOK(response.data.purchase.purchasable);
   });
 };
 const formData = ref({

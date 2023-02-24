@@ -48,7 +48,7 @@ import { useI18n } from "vue-i18n";
 
 const props = defineProps({
   item_id: {
-    type: Number,
+    type: Number || String,
     required: true,
   },
 });

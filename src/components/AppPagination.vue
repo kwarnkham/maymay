@@ -25,7 +25,7 @@ const props = defineProps({
     required: true,
   },
   max: {
-    type: Number,
+    type: Number || String,
     required: true,
   },
   modelValue: {
