@@ -1,5 +1,10 @@
 <template>
-  <q-dialog ref="dialogRef" @hide="onDialogHide" persistent position="bottom">
+  <q-dialog
+    ref="dialogRef"
+    @hide="onDialogHide"
+    no-backdrop-dismiss
+    position="bottom"
+  >
     <q-card class="q-dialog-plugin">
       <q-form @submit.prevent="submit" class="q-pa-sm">
         <q-input

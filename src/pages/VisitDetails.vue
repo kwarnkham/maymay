@@ -19,7 +19,12 @@
       <div><q-icon name="location_pin" /> {{ visit.patient.address }}</div>
     </div>
     <div class="q-my-xs row">
-      <q-btn icon="add" class="col" />
+      <q-btn
+        icon="add"
+        class="col"
+        v-if="![4, 5].includes(visit.status)"
+        @click="showProductSearchingDialog"
+      />
     </div>
     <q-markup-table separator="cell" flat bordered wrap-cells>
       <thead>
@@ -54,6 +59,36 @@
           </td>
         </tr>
 
+        <tr
+          v-for="(product, key) in cartStore.getProducts"
+          :key="product.id"
+          class="text-primary"
+        >
+          <td class="text-left">{{ key + 1 + visit.products.length }}</td>
+          <td class="text-left">{{ product.name }}</td>
+          <td class="text-right">
+            <span
+              @click="applyDiscount(product)"
+              :class="{ 'text-accent': product.discount }"
+            >
+              {{
+                (
+                  product.sale_price - (product.discount ?? 0) || "FOC"
+                ).toLocaleString()
+              }}
+            </span>
+          </td>
+          <td class="text-right">{{ product.quantity }}</td>
+          <td class="text-right">
+            {{
+              (
+                (product.sale_price - (product.discount ?? 0)) *
+                  product.quantity || "FOC"
+              ).toLocaleString()
+            }}
+          </td>
+        </tr>
+
         <tr>
           <td colspan="3" class="text-right">Total</td>
           <td class="text-right">
@@ -61,20 +96,31 @@
               visit.products.reduce(
                 (carry, product) => carry + product.pivot.quantity,
                 0
+              ) +
+              cartStore.getProducts.reduce(
+                (carry, product) => carry + product.quantity,
+                0
               )
             }}
           </td>
           <td class="text-right">
             {{
-              visit.products
-                .reduce(
+              (
+                visit.products.reduce(
                   (carry, product) =>
                     carry +
                     (product.pivot.sale_price -
                       product.pivot.discount * product.pivot.quantity),
                   0
+                ) +
+                cartStore.getProducts.reduce(
+                  (carry, product) =>
+                    carry +
+                    (product.sale_price - (product.discount ?? 0)) *
+                      product.quantity,
+                  0
                 )
-                .toLocaleString()
+              ).toLocaleString()
             }}
           </td>
         </tr>
@@ -82,14 +128,27 @@
           <td colspan="3"></td>
           <td class="text-right">Discount</td>
           <td class="text-right">
-            {{ visit.discount.toLocaleString() }}
+            {{ (visit.discount + cartStore.getCart.discount).toLocaleString() }}
           </td>
         </tr>
         <tr>
           <td colspan="3"></td>
           <td class="text-right">Amount</td>
           <td class="text-right">
-            {{ (visit.amount - visit.discount || "FOC").toLocaleString() }}
+            {{
+              (
+                visit.amount +
+                  cartStore.getProducts.reduce(
+                    (carry, product) =>
+                      carry +
+                      (product.sale_price - (product.discount ?? 0)) *
+                        product.quantity,
+                    0
+                  ) -
+                  visit.discount -
+                  cartStore.getCart.discount || "FOC"
+              ).toLocaleString()
+            }}
           </td>
         </tr>
       </tbody>
@@ -98,13 +157,47 @@
 </template>
 
 <script setup>
+import { useQuasar } from "quasar";
+import ProductSearchingDialog from "src/components/ProductSearchingDialog.vue";
 import useUtil from "src/composables/util";
+import { useCartStore } from "src/stores/cart-store";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
+const cartStore = useCartStore();
 const route = useRoute();
 const { api } = useUtil();
 const visit = ref(null);
+const { dialog } = useQuasar();
+const showProductSearchingDialog = () => {
+  dialog({
+    component: ProductSearchingDialog,
+  });
+};
+
+const applyDiscount = (product) => {
+  dialog({
+    title: "Apply discount for " + product.name,
+    message: "Normal sale price is " + product.sale_price,
+    prompt: {
+      type: "number",
+      inputmode: "numeric",
+      pattern: "[0-9]*",
+      isValid: (val) => val <= product.sale_price,
+      model: product.discount ? product.sale_price - product.discount : "",
+    },
+    position: "top",
+    noBackdropDismiss: true,
+    cancel: true,
+  }).onOk((val) => {
+    const discount = product.sale_price - val;
+
+    cartStore.updateProduct({
+      ...product,
+      discount: discount > 0 ? discount : undefined,
+    });
+  });
+};
 onMounted(() => {
   api({
     method: "GET",
