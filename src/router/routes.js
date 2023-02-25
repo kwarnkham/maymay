@@ -10,14 +10,6 @@ const routes = [
         name: 'index',
       },
       {
-        path: 'record-visit/:patient',
-        component: () => import('pages/RecordVisit.vue'),
-        name: 'record-visit',
-        meta: {
-          requiresAuth: true
-        }
-      },
-      {
         path: 'logout',
         component: () => import('pages/LogoutPage.vue'),
         name: 'logout',

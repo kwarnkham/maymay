@@ -27,5 +27,7 @@ export default {
   editItem: "Edit Item",
   purchaseProduct: "Purchase product",
   purchasedPrice: "Purchased pirce",
-  stock: "Stock"
+  stock: "Stock",
+  add: "Add",
+  doNotAdd: "Do not add"
 }

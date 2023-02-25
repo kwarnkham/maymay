@@ -3,7 +3,10 @@
     <div class="text-center text-h5">
       {{ visit.patient.code }}
     </div>
-    <div class="text-subtitle1"># {{ visit.id }}</div>
+    <div class="row justify-between">
+      <div class="text-subtitle1"># {{ visit.id }}</div>
+      <div class="text-subtitle1">Status: {{ visit.status }}</div>
+    </div>
     <div class="row justify-between">
       <div><q-icon name="person" /> {{ visit.patient.name }}</div>
       <div>
@@ -128,13 +131,28 @@
         </tr>
       </tbody>
     </q-markup-table>
-    <div class="row justify-around q-mt-xs">
+    <div
+      class="row justify-around q-mt-xs"
+      v-if="![4, 5].includes(visit.status)"
+    >
       <q-btn
         icon="local_post_office"
         @click="addProductsToVisit(3)"
         :disabled="!allChecked"
       />
       <q-btn icon="save" @click="addProductsToVisit(2)" />
+      <q-btn
+        icon="point_of_sale"
+        @click="addProductsToVisit(4)"
+        :disabled="visit.status != 3"
+        color="positive"
+      />
+      <q-btn
+        icon="cancel"
+        @click="addProductsToVisit(5)"
+        :disabled="visit.status == 4"
+        color="warning"
+      />
     </div>
   </q-page>
 </template>
@@ -293,20 +311,27 @@ const editQuanity = (product) => {
 };
 
 const addProductsToVisit = (status) => {
-  api({
-    url: `visits/${route.params.visit}/products`,
-    method: "POST",
-    data: {
-      products: products.value,
-      discount: discount.value,
-      status,
-    },
-  }).then((response) => {
-    visit.value = response.data.visit;
-    reassignProducts();
-    notify({
-      message: t("success"),
-      type: "positive",
+  dialog({
+    title: "Confirm",
+    message: "Are you sure?",
+    noBackdropDismiss: true,
+    cancel: true,
+  }).onOk(() => {
+    api({
+      url: `visits/${route.params.visit}/products`,
+      method: "POST",
+      data: {
+        products: status == 5 ? [] : products.value,
+        discount: status == 5 ? 0 : discount.value,
+        status,
+      },
+    }).then((response) => {
+      visit.value = response.data.visit;
+      reassignProducts();
+      notify({
+        message: t("success"),
+        type: "positive",
+      });
     });
   });
 };

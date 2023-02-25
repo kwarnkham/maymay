@@ -27,5 +27,7 @@ export default {
   editItem: "ပစ္စည်း အမျိုးအစား ပြင်ရန်",
   purchaseProduct: "ပစ္စည်းအဝယ်",
   purchasedPrice: "ဝယ်စျေး",
-  stock: "လက်ကျန်"
+  stock: "လက်ကျန်",
+  add: "ထည့်မယ်",
+  doNotAdd: "မထည့်ဘူး"
 }

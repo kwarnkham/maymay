@@ -11,7 +11,7 @@
       <q-item-label caption>{{ patient.age }}</q-item-label>
     </q-item-section>
     <q-item-section>
-      <q-btn icon="inventory" no-caps dense @click="recordVisit()" />
+      <q-btn icon="inventory" no-caps dense @click="recordVisit(patient)" />
     </q-item-section>
     <q-item-section>
       <q-btn icon="details" no-caps dense />
@@ -21,6 +21,7 @@
 
 <script setup>
 import { useQuasar } from "quasar";
+import useUtil from "src/composables/util";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 
@@ -33,31 +34,42 @@ const props = defineProps({
 
 const { dialog } = useQuasar();
 const { t } = useI18n();
+const { api } = useUtil();
 
 const router = useRouter();
-const recordVisit = () => {
+const goToVisit = (data) => {
+  api({
+    url: "visits",
+    method: "POST",
+    data,
+  }).then((response) => {
+    router.push({
+      name: "visit-details",
+      params: {
+        visit: response.data.visit.id,
+      },
+    });
+  });
+};
+const recordVisit = (patient) => {
   dialog({
     title: t("bookFees"),
     message: t("doYouWantToAddBookFees"),
     cancel: true,
-    noBackdropDismiss: true,
     ok: {
-      label: "Yes",
+      label: t("add"),
       noCaps: true,
     },
     cancel: {
-      label: "No",
+      label: t("doNotAdd"),
       noCaps: true,
     },
   })
     .onOk(() => {
-      router.push({
-        name: "record-visit",
-        params: {
-          patient: props.patient.id,
-        },
-      });
+      goToVisit({ patient_id: patient.id, with_book_fees: 1 });
     })
-    .onCancel(() => {});
+    .onCancel(() => {
+      goToVisit({ patient_id: patient.id, with_book_fees: 0 });
+    });
 };
 </script>

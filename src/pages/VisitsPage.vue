@@ -37,6 +37,7 @@
               }}
             </q-item-label>
             <div># {{ visit.id }}</div>
+            <div>status : {{ visit.status }}</div>
           </q-item-section>
         </q-item>
       </template>
