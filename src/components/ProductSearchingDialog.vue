@@ -21,7 +21,7 @@
           :outline="products.findIndex((e) => e.id == product.id) != -1"
           :flat="products.findIndex((e) => e.id == product.id) == -1"
           :label="product.name"
-          v-for="product in products"
+          v-for="product in searchedProducts"
           :key="product.id"
           no-caps
           :color="product.stock > 0 ? 'primary' : 'negative'"
@@ -56,8 +56,7 @@ const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } =
 
 const search = ref("");
 const { api } = useUtil();
-const products = ref([]);
-const { notify } = useQuasar();
+const searchedProducts = ref([]);
 watch(
   search,
   debounce(() => {
@@ -70,7 +69,7 @@ watch(
           limit: 8,
         },
       }).then((response) => {
-        products.value = response.data.products;
+        searchedProducts.value = response.data.products;
       });
     }
   }, 800)

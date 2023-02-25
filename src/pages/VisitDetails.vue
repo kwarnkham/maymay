@@ -43,7 +43,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(product, key) in products" :key="product.id">
+        <tr
+          v-for="(product, key) in products"
+          :key="product.id"
+          :class="{ 'bg-green-2': packedProducts.includes(product.id) }"
+        >
           <td class="text-left">{{ key + 1 }}</td>
           <td class="text-left">
             <span @click="removeFromVisit(product)">{{ product.name }}</span>
@@ -60,14 +64,18 @@
               }}
             </span>
           </td>
-          <td class="text-right">{{ product.quantity }}</td>
           <td class="text-right">
-            {{
-              (
-                (product.sale_price - (product.discount ?? 0)) *
-                  product.quantity || "FOC"
-              ).toLocaleString()
-            }}
+            <span @click="editQuanity(product)">{{ product.quantity }}</span>
+          </td>
+          <td class="text-right">
+            <span @click="markAsPacked(product)">
+              {{
+                (
+                  (product.sale_price - (product.discount ?? 0)) *
+                    product.quantity || "FOC"
+                ).toLocaleString()
+              }}
+            </span>
           </td>
         </tr>
 
@@ -96,7 +104,9 @@
           <td colspan="3"></td>
           <td class="text-right">Discount</td>
           <td class="text-right">
-            {{ discount.toLocaleString() }}
+            <span @click="applyVisitDiscount">{{
+              discount.toLocaleString()
+            }}</span>
           </td>
         </tr>
         <tr>
@@ -118,6 +128,14 @@
         </tr>
       </tbody>
     </q-markup-table>
+    <div class="row justify-around q-mt-xs">
+      <q-btn
+        icon="local_post_office"
+        @click="addProductsToVisit(3)"
+        :disabled="!allChecked"
+      />
+      <q-btn icon="save" @click="addProductsToVisit(2)" />
+    </div>
   </q-page>
 </template>
 
@@ -125,7 +143,8 @@
 import { useQuasar } from "quasar";
 import ProductSearchingDialog from "src/components/ProductSearchingDialog.vue";
 import useUtil from "src/composables/util";
-import { inject, onMounted, ref, onBeforeUnmount } from "vue";
+import { inject, onMounted, ref, onBeforeUnmount, computed } from "vue";
+import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
@@ -135,6 +154,15 @@ const { dialog, notify } = useQuasar();
 const bus = inject("bus");
 const products = ref([]);
 const discount = ref(0);
+const { t } = useI18n();
+const packedProducts = ref([]);
+const allChecked = computed(() => {
+  let result = true;
+  products.value.forEach((product) => {
+    result = packedProducts.value.includes(product.id);
+  });
+  return result;
+});
 
 const showProductSearchingDialog = () => {
   dialog({
@@ -158,6 +186,7 @@ const removeFromVisit = (product) => {
     );
   });
 };
+
 const addToVisit = (product) => {
   const addedQuantity = products.value.find(
     (e) => e.id == product.id
@@ -198,17 +227,106 @@ const applyDiscount = (product) => {
     };
   });
 };
+const markAsPacked = (product) => {
+  const index = packedProducts.value.findIndex((e) => e == product.id);
+  if (index >= 0) packedProducts.value.splice(index, 1);
+  else packedProducts.value.push(product.id);
+};
+const getVisitQuantity = (product_id) => {
+  return (
+    visit.value.products.find((e) => e.id == product_id)?.pivot.quantity ?? 0
+  );
+};
+
+const applyVisitDiscount = () => {
+  dialog({
+    title: "Apply discount",
+    message: `Discount for the whole visit`,
+    prompt: {
+      model: discount.value || "",
+      type: "number",
+      inputmode: "numeric",
+      pattern: "[0-9]*",
+      isValid: (val) =>
+        val <=
+          products.value.reduce(
+            (carry, product) =>
+              carry +
+              (product.sale_price - (product.discount ?? 0)) * product.quantity,
+            0
+          ) && val >= 0,
+    },
+    noBackdropDismiss: true,
+    cancel: true,
+  }).onOk((value) => {
+    discount.value = value;
+  });
+};
+
+const getStock = (product) => {
+  return getVisitQuantity(product.id) + product.stock;
+};
+
+const editQuanity = (product) => {
+  dialog({
+    title: "Edit quantity of " + product.name,
+    message: `Stock ${getStock(product)}`,
+    prompt: {
+      model: product.quantity,
+      type: "number",
+      inputmode: "numeric",
+      pattern: "[0-9]*",
+      isValid: (val) =>
+        val <= Number(product.stock) + Number(getVisitQuantity(product.id)) &&
+        val > 0,
+    },
+    noBackdropDismiss: true,
+    cancel: true,
+  }).onOk((value) => {
+    product.quantity = Number(value);
+    products.value.splice(
+      products.value.findIndex((e) => e.id == product.id),
+      1,
+      product
+    );
+  });
+};
+
+const addProductsToVisit = (status) => {
+  api({
+    url: `visits/${route.params.visit}/products`,
+    method: "POST",
+    data: {
+      products: products.value,
+      discount: discount.value,
+      status,
+    },
+  }).then((response) => {
+    visit.value = response.data.visit;
+    reassignProducts();
+    notify({
+      message: t("success"),
+      type: "positive",
+    });
+  });
+};
+
+const reassignProducts = () => {
+  products.value = visit.value.products.map((product) => ({
+    ...product,
+    quantity: product.pivot.quantity,
+    discount: product.pivot.discount,
+  }));
+  discount.value = visit.value.discount;
+};
+
 onMounted(() => {
   api({
     method: "GET",
     url: "visits/" + route.params.visit,
   }).then((response) => {
     visit.value = response.data.visit;
-    products.value = visit.value.products.map((product) => ({
-      ...product,
-      quantity: product.pivot.quantity,
-      discount: product.pivot.discount,
-    }));
+    reassignProducts();
   });
 
   bus.on("addToVisit", addToVisit);

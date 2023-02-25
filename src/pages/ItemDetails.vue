@@ -28,8 +28,6 @@ const showProductFormDialog = () => {
     componentProps: {
       item_id: route.params.item,
     },
-  }).onOk((product) => {
-    pagination.value.data.unshift(product);
   });
 };
 onMounted(() => {

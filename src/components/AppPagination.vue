@@ -25,11 +25,11 @@ const props = defineProps({
     required: true,
   },
   max: {
-    type: Number || String,
+    type: [Number, String],
     required: true,
   },
   modelValue: {
-    type: Number || String,
+    type: [Number, String],
     required: true,
   },
 });

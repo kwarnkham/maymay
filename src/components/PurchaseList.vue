@@ -9,19 +9,18 @@
           clickable
           v-ripple
           @click="cancelPurchase(purchase)"
-          :disable="purchase.status == 2"
+          :disable="purchase.status == 2 || purchase.stock != purchase.quantity"
           :class="{ 'bg-black text-white': purchase.status == 2 }"
         >
           <q-item-section>
             <q-item-label>
               {{ purchase.purchasable.name }} #{{ purchase.id }}
             </q-item-label>
-            <q-item-label caption>
-              {{ purchase.price }}
-            </q-item-label>
+            <q-item-label caption> Price :{{ purchase.price }} </q-item-label>
           </q-item-section>
           <q-item-section side top>
-            <q-item-label>{{ purchase.quantity }} </q-item-label>
+            <q-item-label>Qty: {{ purchase.quantity }} </q-item-label>
+            <q-item-label>Stock: {{ purchase.stock }} </q-item-label>
             <q-item-label v-if="purchase.expired_on">
               {{ new Date(purchase.expired_on).toLocaleDateString("en-GB") }}
             </q-item-label>
@@ -47,7 +46,7 @@ import useUtil from "src/composables/util";
 
 const props = defineProps({
   purchasable_id: {
-    type: Number || String,
+    type: [Number, String],
     required: false,
   },
   type: {

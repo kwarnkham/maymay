@@ -43,13 +43,16 @@
 import AppPagination from "src/components/AppPagination.vue";
 import usePagination from "src/composables/pagination";
 import useSearchFilter from "src/composables/searchFilter";
+import { inject, onMounted, onBeforeUnmount } from "vue";
 
 const props = defineProps({
   item_id: {
-    type: Number || String,
+    type: [Number, String],
     required: false,
   },
 });
+
+const bus = inject("bus");
 
 const { pagination, current, max, fetch } = usePagination(
   "products",
@@ -64,5 +67,17 @@ const { search } = useSearchFilter({
   fetch,
   current,
   params: props.item_id ? { item_id: props.item_id } : undefined,
+});
+
+const addProduct = (product) => {
+  pagination.value.data.unshift(product);
+};
+
+onMounted(() => {
+  bus.on("productAdded", addProduct);
+});
+
+onBeforeUnmount(() => {
+  bus.off("productAdded", addProduct);
 });
 </script>

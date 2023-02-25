@@ -15,10 +15,11 @@
 <script setup>
 import { useQuasar } from "quasar";
 import useUtil from "src/composables/util";
-import { ref } from "vue";
+import { ref, inject } from "vue";
 import { useI18n } from "vue-i18n";
 
 const { notify } = useQuasar();
+const bus = inject("bus");
 const formData = ref({
   name: "",
   description: "",
@@ -36,7 +37,7 @@ const submit = () => {
       },
     },
     true
-  ).then(() => {
+  ).then((response) => {
     notify({
       message: t("success"),
       type: "positive",
@@ -45,6 +46,7 @@ const submit = () => {
       name: "",
       description: "",
     };
+    bus.emit("itemAdded", response.data.item);
   });
 };
 </script>

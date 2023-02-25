@@ -43,6 +43,7 @@
 import { useQuasar } from "quasar";
 import usePagination from "src/composables/pagination";
 import useSearchFilter from "src/composables/searchFilter";
+import { inject, onMounted, onBeforeUnmount } from "vue";
 import AppPagination from "./AppPagination.vue";
 import ItemFormDialog from "./ItemFormDialog.vue";
 import ProductFormDialog from "./ProductFormDialog.vue";
@@ -51,7 +52,7 @@ const { pagination, fetch, current, max } = usePagination("items");
 const { search } = useSearchFilter({ current, fetch });
 
 const { dialog } = useQuasar();
-
+const bus = inject("bus");
 const showProductFormDialog = (item_id) => {
   dialog({
     component: ProductFormDialog,
@@ -75,6 +76,18 @@ const showItemFormDialog = (item) => {
     );
   });
 };
+
+const addItem = (item) => {
+  pagination.value.data.unshift(item);
+};
+
+onMounted(() => {
+  bus.on("itemAdded", addItem);
+});
+
+onBeforeUnmount(() => {
+  bus.off("itemAdded", addItem);
+});
 </script>
 
 <style scoped lang="scss">

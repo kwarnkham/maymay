@@ -10,7 +10,7 @@
         {{ product.last_purchase_price.toLocaleString() }}
       </div>
     </div>
-    <div>{{ product.stock }}</div>
+    <div>Stock : {{ product.stock }}</div>
     <div>
       <q-btn
         icon="add"

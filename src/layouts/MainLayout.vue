@@ -9,7 +9,16 @@
           flat
           v-if="$route.name != 'index'"
         />
-        <q-toolbar-title> May May </q-toolbar-title>
+        <q-toolbar-title
+          class="cursor-pointer"
+          @click="
+            $router.push({
+              name: 'index',
+            })
+          "
+        >
+          May May
+        </q-toolbar-title>
 
         <div>24hr specialist clinic</div>
       </q-toolbar>

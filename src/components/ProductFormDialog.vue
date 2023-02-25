@@ -43,15 +43,17 @@
 <script setup>
 import { useDialogPluginComponent, useQuasar } from "quasar";
 import useUtil from "src/composables/util";
-import { ref } from "vue";
+import { ref, inject } from "vue";
 import { useI18n } from "vue-i18n";
 
 const props = defineProps({
   item_id: {
-    type: Number || String,
+    type: [Number, String],
     required: true,
   },
 });
+
+const bus = inject("bus");
 
 defineEmits([...useDialogPluginComponent.emits]);
 
@@ -79,6 +81,7 @@ const submit = () => {
       type: "positive",
     });
     onDialogOK(response.data.product);
+    bus.emit("productAdded", response.data.product);
   });
 };
 const formData = ref({
