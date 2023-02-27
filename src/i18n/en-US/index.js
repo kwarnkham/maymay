@@ -29,5 +29,7 @@ export default {
   purchasedPrice: "Purchased pirce",
   stock: "Stock",
   add: "Add",
-  doNotAdd: "Do not add"
+  doNotAdd: "Do not add",
+  editProductInfo: "Edit product info"
+
 }

@@ -74,10 +74,10 @@ const addProduct = (product) => {
 };
 
 onMounted(() => {
-  bus.on("productAdded", addProduct);
+  bus.on("productFormSubmitted", addProduct);
 });
 
 onBeforeUnmount(() => {
-  bus.off("productAdded", addProduct);
+  bus.off("productFormSubmitted", addProduct);
 });
 </script>

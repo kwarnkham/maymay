@@ -29,5 +29,6 @@ export default {
   purchasedPrice: "ဝယ်စျေး",
   stock: "လက်ကျန်",
   add: "ထည့်မယ်",
-  doNotAdd: "မထည့်ဘူး"
+  doNotAdd: "မထည့်ဘူး",
+  editProductInfo: "ပစ္စည်းအကြောင်းအရာပြင်ဆင်ရန်"
 }

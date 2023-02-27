@@ -11,7 +11,7 @@
       </div>
       <q-form @submit.prevent="submit">
         <div class="text-center text-h5">
-          {{ $t("addANewProduct") }}
+          {{ product ? $t("editProductInfo") : $t("addANewProduct") }}
         </div>
         <q-input
           v-model="formData.name"
@@ -51,6 +51,10 @@ const props = defineProps({
     type: [Number, String],
     required: true,
   },
+  product: {
+    type: Object,
+    required: false,
+  },
 });
 
 const bus = inject("bus");
@@ -63,30 +67,34 @@ const { api } = useUtil();
 const { notify } = useQuasar();
 const { t } = useI18n();
 const submit = () => {
-  api(
-    {
-      method: "POST",
-      url: "products",
-      data: {
-        name: formData.value.name,
-        description: formData.value.description,
-        sale_price: formData.value.sale_price,
-        item_id: props.item_id,
-      },
+  const options = {
+    method: "POST",
+    url: "products",
+    data: {
+      name: formData.value.name,
+      description: formData.value.description,
+      sale_price: formData.value.sale_price,
+      item_id: props.item_id,
     },
-    true
-  ).then((response) => {
+  };
+
+  if (props.product) {
+    options.method = "PUT";
+    options.url = `products/${props.product.id}`;
+  }
+
+  api(options, true).then((response) => {
     notify({
       message: t("success"),
       type: "positive",
     });
     onDialogOK(response.data.product);
-    bus.emit("productAdded", response.data.product);
+    bus.emit("productFormSubmitted", response.data.product);
   });
 };
 const formData = ref({
-  name: "",
-  description: "",
-  sale_price: "",
+  name: props.product ? props.product.name : "",
+  description: props.product ? props.product.description : "",
+  sale_price: props.product ? props.product.sale_price : "",
 });
 </script>

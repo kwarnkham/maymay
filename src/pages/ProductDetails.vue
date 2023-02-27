@@ -3,20 +3,17 @@
     <div class="text-center text-h6">
       {{ product.name }}
     </div>
-    <p>{{ product.description }}</p>
+    <p>Description : {{ product.description }}</p>
     <div class="row justify-between">
-      <div>{{ product.sale_price.toLocaleString() }}</div>
+      <div>Sale price :{{ product.sale_price.toLocaleString() }}</div>
       <div v-if="product.last_purchase_price">
-        {{ product.last_purchase_price.toLocaleString() }}
+        Last purchase price : {{ product.last_purchase_price.toLocaleString() }}
       </div>
     </div>
     <div>Stock : {{ product.stock }}</div>
-    <div>
-      <q-btn
-        icon="add"
-        class="full-width"
-        @click="showProductPurchaseForm(product)"
-      />
+    <div class="row q-gutter-x-sm">
+      <q-btn icon="add" class="col" @click="showProductPurchaseForm(product)" />
+      <q-btn icon="edit" class="col" @click="showEditProductForm(product)" />
     </div>
     <PurchaseList
       v-if="showProductList"
@@ -30,6 +27,7 @@
 
 <script setup>
 import { useQuasar } from "quasar";
+import ProductFormDialog from "src/components/ProductFormDialog.vue";
 import ProductPurchaseFormDialog from "src/components/ProductPurchaseFormDialog.vue";
 import PurchaseList from "src/components/PurchaseList.vue";
 import useUtil from "src/composables/util";
@@ -51,19 +49,32 @@ onMounted(() => {
 });
 
 const showProductPurchaseForm = (productToBePurchased) => {
-  showProductList.value = false;
   dialog({
     component: ProductPurchaseFormDialog,
     componentProps: {
       product: productToBePurchased,
     },
-  })
-    .onDismiss(() => {
+  }).onOk((value) => {
+    showProductList.value = false;
+    product.value = value;
+    setTimeout(() => {
       showProductList.value = true;
-    })
-    .onOk((value) => {
-      product.value = value;
-    });
+    }, 500);
+  });
+};
+
+const showEditProductForm = (productToBeEdit) => {
+  dialog({
+    component: ProductFormDialog,
+    componentProps: {
+      item_id: product.value.item_id,
+      product: productToBeEdit,
+    },
+  }).onOk((value) => {
+    product.value.name = value.name;
+    product.value.description = value.description;
+    product.value.sale_price = value.sale_price;
+  });
 };
 
 const updateProduct = (value) => {

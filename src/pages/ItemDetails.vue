@@ -1,7 +1,7 @@
 <template>
   <q-page padding v-if="item" :style-fn="vhPage" class="column">
     <div class="text-center text-h5">{{ item.name }}</div>
-    <p class="text-caption">{{ item.description }}</p>
+    <p class="text-caption">Description : {{ item.description }}</p>
     <div class="text-right">
       <q-btn icon="add" @click="showProductFormDialog" />
     </div>
