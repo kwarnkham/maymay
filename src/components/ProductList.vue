@@ -1,7 +1,8 @@
 <template>
   <div v-if="pagination" class="column">
-    <div>
+    <div class="q-my-xs">
       <q-input v-model="search" :label="$t('search')" />
+      <q-input v-model="maxStock" :label="'Max Stock'" />
     </div>
     <q-list bordered separator class="full-width col overflow-auto">
       <template v-for="product in pagination.data" :key="product.id">
@@ -40,10 +41,12 @@
 </template>
 
 <script setup>
+import { debounce } from "quasar";
 import AppPagination from "src/components/AppPagination.vue";
 import usePagination from "src/composables/pagination";
 import useSearchFilter from "src/composables/searchFilter";
-import { inject, onMounted, onBeforeUnmount } from "vue";
+import { inject, onMounted, onBeforeUnmount, watch, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 const props = defineProps({
   item_id: {
@@ -53,6 +56,7 @@ const props = defineProps({
 });
 
 const bus = inject("bus");
+const maxStock = ref("");
 
 const { pagination, current, max, fetch } = usePagination(
   "products",
@@ -72,6 +76,23 @@ const { search } = useSearchFilter({
 const addProduct = (product) => {
   pagination.value.data.unshift(product);
 };
+
+const route = useRoute();
+const router = useRouter();
+
+watch(
+  maxStock,
+  debounce(() => {
+    router
+      .replace({
+        name: route.name,
+        query: { ...route.query, max_stock: maxStock.value || undefined },
+      })
+      .then(() => {
+        fetch(route.query);
+      });
+  }, 500)
+);
 
 onMounted(() => {
   bus.on("productFormSubmitted", addProduct);
