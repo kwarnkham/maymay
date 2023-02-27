@@ -37,6 +37,10 @@ const menus = [
     route: "product",
   },
   {
+    name: "Change Password",
+    route: "changePassword",
+  },
+  {
     name: "Logout",
     route: "logout",
   },
