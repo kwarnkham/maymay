@@ -9,6 +9,7 @@
     <q-item-section>
       <q-item-label>{{ patient.name }}</q-item-label>
       <q-item-label caption>{{ patient.age }}</q-item-label>
+      <q-item-label caption>{{ patient.code }}</q-item-label>
     </q-item-section>
     <q-item-section>
       <q-btn icon="inventory" no-caps dense @click="recordVisit(patient)" />
