@@ -50,9 +50,9 @@ const routes = [
         }
       },
       {
-        path: 'item',
+        path: 'items',
         component: () => import('pages/ItemPage.vue'),
-        name: 'item',
+        name: 'items',
         meta: {
           requiresAuth: true
         }
@@ -66,9 +66,9 @@ const routes = [
         }
       },
       {
-        path: 'product',
+        path: 'products',
         component: () => import('pages/ProductPage.vue'),
-        name: 'product',
+        name: 'products',
         meta: {
           requiresAuth: true
         }
@@ -85,6 +85,14 @@ const routes = [
         path: 'change-password',
         component: () => import('pages/ChangePassword.vue'),
         name: 'changePassword',
+        meta: {
+          requiresAuth: true
+        }
+      },
+      {
+        path: 'users',
+        component: () => import('pages/UserPage.vue'),
+        name: 'users',
         meta: {
           requiresAuth: true
         }

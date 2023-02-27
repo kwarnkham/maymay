@@ -30,11 +30,15 @@ const menus = [
   },
   {
     name: "Item",
-    route: "item",
+    route: "items",
   },
   {
     name: "Product",
-    route: "product",
+    route: "products",
+  },
+  {
+    name: "User",
+    route: "users",
   },
   {
     name: "Change Password",
