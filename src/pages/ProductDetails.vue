@@ -3,7 +3,7 @@
     <div class="text-center text-h6">
       {{ product.name }}
     </div>
-    <p>Description : {{ product.description }}</p>
+    <p v-if="product.description">Description : {{ product.description }}</p>
     <div class="row justify-between">
       <div>Sale price :{{ product.sale_price.toLocaleString() }}</div>
       <div v-if="product.last_purchase_price">

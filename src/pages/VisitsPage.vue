@@ -37,7 +37,17 @@
               }}
             </q-item-label>
             <div># {{ visit.id }}</div>
-            <div>status : {{ visit.status }}</div>
+            <div
+              :class="{
+                'text-negative': visit.status == 5,
+                'text-positive': visit.status == 4,
+                'text-accent': visit.status == 3,
+                'text-info': visit.status == 2,
+                'text-primary': visit.status == 1,
+              }"
+            >
+              status : {{ visitStatusToString(visit.status) }}
+            </div>
           </q-item-section>
         </q-item>
       </template>
@@ -58,10 +68,13 @@ import { ref, watch, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { debounce } from "quasar";
 import AppPagination from "src/components/AppPagination.vue";
+import useApp from "src/composables/app";
+import { useUserStore } from "src/stores/user-store";
 
 const route = useRoute();
 const router = useRouter();
-
+const userStore = useUserStore();
+const { visitStatusToString } = useApp();
 const statuses = ref([
   { key: "1", name: "Pending", value: false },
   { key: "2", name: "Products Added", value: false },
@@ -76,8 +89,21 @@ statuses.value.forEach((e) => {
   }
 });
 
-if (!statuses.value.filter((e) => e.value).length)
-  statuses.value[0].value = true;
+if (!statuses.value.filter((e) => e.value).length) {
+  if (userStore.getUser.roles.map((role) => role.name).includes("admin")) {
+    statuses.value[4].value = true;
+  }
+  if (userStore.getUser.roles.map((role) => role.name).includes("cashier")) {
+    statuses.value[0].value = true;
+    statuses.value[1].value = true;
+    statuses.value[2].value = true;
+    statuses.value[3].value = true;
+  }
+  if (userStore.getUser.roles.map((role) => role.name).includes("pharmacist")) {
+    statuses.value[1].value = true;
+    statuses.value[2].value = true;
+  }
+}
 
 const statusesParam = computed(() =>
   statuses.value
