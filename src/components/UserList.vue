@@ -30,7 +30,7 @@
                 "
                 @click="toggleRole({ user, role })"
               >
-                {{ role.name }} {{ role.id }}
+                {{ role.name }}
               </q-badge>
             </q-item-label>
           </q-item-section>

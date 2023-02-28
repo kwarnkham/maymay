@@ -5,7 +5,9 @@
     </div>
     <div class="row justify-between">
       <div class="text-subtitle1"># {{ visit.id }}</div>
-      <div class="text-subtitle1">Status: {{ visit.status }}</div>
+      <div class="text-subtitle1">
+        Status: {{ visitStatusToString(visit.status) }}
+      </div>
     </div>
     <div class="row justify-between">
       <div><q-icon name="person" /> {{ visit.patient.name }}</div>
@@ -49,7 +51,10 @@
         <tr
           v-for="(product, key) in products"
           :key="product.id"
-          :class="{ 'bg-green-2': packedProducts.includes(product.id) }"
+          :class="{
+            'bg-green-2': visit.status == 3,
+            'bg-lime': packedProducts.includes(product.id),
+          }"
         >
           <td class="text-left">{{ key + 1 }}</td>
           <td class="text-left">
@@ -135,23 +140,30 @@
       class="row justify-around q-mt-xs"
       v-if="![4, 5].includes(visit.status)"
     >
+      <template
+        v-if="stringRoles.includes('admin') || stringRoles.includes('cashier')"
+      >
+        <q-btn icon="save" @click="addProductsToVisit(2)" />
+        <q-btn
+          icon="point_of_sale"
+          @click="addProductsToVisit(4)"
+          :disabled="visit.status != 3"
+          color="positive"
+        />
+        <q-btn
+          icon="cancel"
+          @click="addProductsToVisit(5)"
+          :disabled="visit.status == 4"
+          color="warning"
+        />
+      </template>
       <q-btn
         icon="local_post_office"
         @click="addProductsToVisit(3)"
         :disabled="!allChecked"
-      />
-      <q-btn icon="save" @click="addProductsToVisit(2)" />
-      <q-btn
-        icon="point_of_sale"
-        @click="addProductsToVisit(4)"
-        :disabled="visit.status != 3"
-        color="positive"
-      />
-      <q-btn
-        icon="cancel"
-        @click="addProductsToVisit(5)"
-        :disabled="visit.status == 4"
-        color="warning"
+        v-if="
+          stringRoles.includes('admin') || stringRoles.includes('pharmacist')
+        "
       />
     </div>
   </q-page>
@@ -160,13 +172,17 @@
 <script setup>
 import { useQuasar } from "quasar";
 import ProductSearchingDialog from "src/components/ProductSearchingDialog.vue";
+import useApp from "src/composables/app";
 import useUtil from "src/composables/util";
+import { useUserStore } from "src/stores/user-store";
 import { inject, onMounted, ref, onBeforeUnmount, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 
+const userStore = useUserStore();
 const route = useRoute();
 const { api } = useUtil();
+const { visitStatusToString } = useApp();
 const visit = ref(null);
 const { dialog, notify } = useQuasar();
 const bus = inject("bus");
@@ -174,6 +190,8 @@ const products = ref([]);
 const discount = ref(0);
 const { t } = useI18n();
 const packedProducts = ref([]);
+
+const stringRoles = computed(() => userStore.getUser.roles.map((e) => e.name));
 const allChecked = computed(() => {
   let result = true;
   products.value.forEach((product) => {
@@ -192,6 +210,7 @@ const showProductSearchingDialog = () => {
 };
 
 const removeFromVisit = (product) => {
+  if ([4, 5].includes(visit.value.status)) return;
   dialog({
     title: "Confirm",
     message: "Do you want to remove the product, " + product.name,
@@ -223,6 +242,8 @@ const addToVisit = (product) => {
 };
 
 const applyDiscount = (product) => {
+  if ([4, 5].includes(visit.value.status)) return;
+  if (!stringRoles.value.includes("admin")) return;
   dialog({
     title: "Apply discount for " + product.name,
     message: "Normal sale price is " + product.sale_price,
@@ -245,11 +266,19 @@ const applyDiscount = (product) => {
     };
   });
 };
+
 const markAsPacked = (product) => {
+  if ([4, 5].includes(visit.value.status)) return;
+  if (
+    !stringRoles.value.includes("pharmacist") &&
+    !stringRoles.value.includes("admin")
+  )
+    return;
   const index = packedProducts.value.findIndex((e) => e == product.id);
   if (index >= 0) packedProducts.value.splice(index, 1);
   else packedProducts.value.push(product.id);
 };
+
 const getVisitQuantity = (product_id) => {
   return (
     visit.value.products.find((e) => e.id == product_id)?.pivot.quantity ?? 0
@@ -257,6 +286,8 @@ const getVisitQuantity = (product_id) => {
 };
 
 const applyVisitDiscount = () => {
+  if ([4, 5].includes(visit.value.status)) return;
+  if (!stringRoles.value.includes("admin")) return;
   dialog({
     title: "Apply discount",
     message: `Discount for the whole visit`,
@@ -286,6 +317,12 @@ const getStock = (product) => {
 };
 
 const editQuanity = (product) => {
+  if ([4, 5].includes(visit.value.status)) return;
+  if (
+    !stringRoles.value.includes("admin") &&
+    !stringRoles.value.includes("cashier")
+  )
+    return;
   dialog({
     title: "Edit quantity of " + product.name,
     message: `Stock ${getStock(product)}`,
@@ -311,6 +348,7 @@ const editQuanity = (product) => {
 };
 
 const addProductsToVisit = (status) => {
+  if ([4, 5].includes(visit.value.status)) return;
   dialog({
     title: "Confirm",
     message: "Are you sure?",
@@ -328,6 +366,7 @@ const addProductsToVisit = (status) => {
     }).then((response) => {
       visit.value = response.data.visit;
       reassignProducts();
+      packedProducts.value = [];
       notify({
         message: t("success"),
         type: "positive",

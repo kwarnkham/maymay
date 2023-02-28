@@ -76,34 +76,24 @@ const router = useRouter();
 const userStore = useUserStore();
 const { visitStatusToString } = useApp();
 const statuses = ref([
-  { key: "1", name: "Pending", value: false },
-  { key: "2", name: "Products Added", value: false },
-  { key: "3", name: "Confirmed", value: false },
-  { key: "4", name: "Completed", value: false },
-  { key: "5", name: "Canceled", value: false },
+  { key: "1", name: "Pending", value: true },
+  { key: "2", name: "Products Added", value: true },
+  { key: "3", name: "Confirmed", value: true },
+  { key: "4", name: "Completed", value: true },
+  { key: "5", name: "Canceled", value: true },
 ]);
-
+const stringRoles = userStore.getUser.roles.map((e) => e.name);
+if (!stringRoles.includes("admin"))
+  statuses.value = statuses.value.filter((e) => {
+    if (stringRoles.includes("cashier")) {
+      return ["1", "2", "3", "4"].includes(e.key);
+    } else if (stringRoles.includes("pharmacist")) {
+      return ["2", "3"].includes(e.key);
+    }
+  });
 statuses.value.forEach((e) => {
-  if (route.query.statuses?.includes(e.key)) {
-    e.value = true;
-  }
+  e.value = route.query.statuses?.includes(e.key) || false;
 });
-
-if (!statuses.value.filter((e) => e.value).length) {
-  if (userStore.getUser.roles.map((role) => role.name).includes("admin")) {
-    statuses.value[4].value = true;
-  }
-  if (userStore.getUser.roles.map((role) => role.name).includes("cashier")) {
-    statuses.value[0].value = true;
-    statuses.value[1].value = true;
-    statuses.value[2].value = true;
-    statuses.value[3].value = true;
-  }
-  if (userStore.getUser.roles.map((role) => role.name).includes("pharmacist")) {
-    statuses.value[1].value = true;
-    statuses.value[2].value = true;
-  }
-}
 
 const statusesParam = computed(() =>
   statuses.value
@@ -111,9 +101,14 @@ const statusesParam = computed(() =>
     .map((e) => e.key)
     .join(",")
 );
+if (statusesParam.value == "")
+  statuses.value = statuses.value.map((e) => {
+    e.value = true;
+    return e;
+  });
 const { vhPage } = useUtil();
 const { pagination, current, max, fetch } = usePagination("visits", {
-  statuses: statusesParam.value,
+  statuses: statusesParam.value || undefined,
 });
 
 watch(
