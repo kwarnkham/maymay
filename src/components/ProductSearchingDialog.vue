@@ -26,7 +26,7 @@
           no-caps
           :color="product.stock > 0 ? 'primary' : 'negative'"
           @click="addToVisit(product)"
-          :disabled="product.stock <= 0"
+          :disabled="product.stock <= 0 && product.item_id != 1"
         >
           <q-badge floating>{{ product.stock }} </q-badge>
         </q-btn>
