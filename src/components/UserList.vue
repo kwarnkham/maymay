@@ -32,6 +32,13 @@
               >
                 {{ role.name }}
               </q-badge>
+              <q-btn
+                icon="lock_reset"
+                dense
+                flat
+                class="q-mt-sm"
+                @click="resetPassword(user)"
+              />
             </q-item-label>
           </q-item-section>
         </q-item>
@@ -63,9 +70,8 @@ const props = defineProps({
 });
 
 const { api } = useUtil();
-
 const bus = inject("bus");
-const { dialog } = useQuasar();
+const { dialog, notify } = useQuasar();
 const roles = ref([]);
 
 const { pagination, current, max, fetch } = usePagination("users");
@@ -107,6 +113,24 @@ const showEditUserDialog = (user) => {
   });
 };
 
+const resetPassword = (user) => {
+  dialog({
+    title: "Confirm",
+    message: "Do you want to reset the password for user " + user.username,
+    noBackdropDismiss: true,
+    cancel: true,
+  }).onOk(() => {
+    api({
+      url: `users/${user.id}/reset-password`,
+      method: "POST",
+    }).then(() => {
+      notify({
+        message: "Success",
+        type: "positive",
+      });
+    });
+  });
+};
 onMounted(() => {
   bus.on("userSubmitted", addUser);
   api({
