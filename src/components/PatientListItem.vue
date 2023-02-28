@@ -12,10 +12,22 @@
       <q-item-label caption>{{ patient.code }}</q-item-label>
     </q-item-section>
     <q-item-section>
-      <q-btn icon="inventory" no-caps dense @click="recordVisit(patient)" />
+      <q-btn
+        icon="book"
+        no-caps
+        dense
+        @click="recordVisit(patient)"
+        color="grey"
+      />
     </q-item-section>
     <q-item-section>
-      <q-btn icon="details" no-caps dense />
+      <q-btn
+        icon="book"
+        no-caps
+        dense
+        @click="recordVisit(patient, true)"
+        color="primary"
+      />
     </q-item-section>
   </q-item>
 </template>
@@ -52,25 +64,19 @@ const goToVisit = (data) => {
     });
   });
 };
-const recordVisit = (patient) => {
+const recordVisit = (patient, with_book_fees) => {
   dialog({
-    title: t("bookFees"),
-    message: t("doYouWantToAddBookFees"),
+    title: "Confirm",
+    message: "Are you sure?",
     cancel: true,
+    class: with_book_fees ? "bg-blue-2" : "",
+    noBackdropDismiss: true,
     ok: {
       label: t("add"),
       noCaps: true,
     },
-    cancel: {
-      label: t("doNotAdd"),
-      noCaps: true,
-    },
-  })
-    .onOk(() => {
-      goToVisit({ patient_id: patient.id, with_book_fees: 1 });
-    })
-    .onCancel(() => {
-      goToVisit({ patient_id: patient.id, with_book_fees: 0 });
-    });
+  }).onOk(() => {
+    goToVisit({ patient_id: patient.id, with_book_fees });
+  });
 };
 </script>
