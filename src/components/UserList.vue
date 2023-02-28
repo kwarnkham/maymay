@@ -7,15 +7,30 @@
       <template v-for="user in pagination.data" :key="user.id">
         <q-item>
           <q-item-section>
-            <q-item-label> {{ user.username }} </q-item-label>
+            <q-item-label
+              class="cursor-pointer"
+              @click="showEditUserDialog(user)"
+            >
+              {{ user.username }}
+            </q-item-label>
             <q-item-label caption v-if="user.name">
               {{ user.name }}
             </q-item-label>
           </q-item-section>
           <q-item-section side top>
             <q-item-label class="q-gutter-x-xs text-right">
-              <q-badge v-for="role in user.roles" :key="role">
-                {{ role.name }}
+              <q-badge
+                class="cursor-pointer"
+                v-for="role in roles"
+                :key="role"
+                :color="
+                  user.roles.map((e) => e.name).includes(role.name)
+                    ? 'pirmary'
+                    : 'grey'
+                "
+                @click="toggleRole({ user, role })"
+              >
+                {{ role.name }} {{ role.id }}
               </q-badge>
             </q-item-label>
           </q-item-section>
@@ -32,10 +47,13 @@
 </template>
 
 <script setup>
+import { useQuasar } from "quasar";
 import AppPagination from "src/components/AppPagination.vue";
 import usePagination from "src/composables/pagination";
 import useSearchFilter from "src/composables/searchFilter";
-import { inject, onMounted, onBeforeUnmount } from "vue";
+import useUtil from "src/composables/util";
+import { inject, onMounted, onBeforeUnmount, ref } from "vue";
+import UserFormDialog from "./dialogs/UserFormDialog.vue";
 
 const props = defineProps({
   item_id: {
@@ -44,7 +62,11 @@ const props = defineProps({
   },
 });
 
+const { api } = useUtil();
+
 const bus = inject("bus");
+const { dialog } = useQuasar();
+const roles = ref([]);
 
 const { pagination, current, max, fetch } = usePagination("users");
 
@@ -57,8 +79,42 @@ const addUser = (user) => {
   pagination.value.data.unshift(user);
 };
 
+const toggleRole = ({ user, role }) => {
+  if (role.id == 1) return;
+  api({
+    method: "POST",
+    url: `users/${user.id}/role`,
+    data: {
+      role_id: role.id,
+    },
+  }).then((response) => {
+    const index = pagination.value.data.findIndex(
+      (e) => e.id == response.data.user.id
+    );
+    pagination.value.data[index] = response.data.user;
+  });
+};
+
+const showEditUserDialog = (user) => {
+  dialog({
+    component: UserFormDialog,
+    componentProps: {
+      user,
+    },
+  }).onOk((user) => {
+    const index = pagination.value.data.findIndex((e) => e.id == user.id);
+    pagination.value.data[index] = user;
+  });
+};
+
 onMounted(() => {
   bus.on("userSubmitted", addUser);
+  api({
+    url: "roles",
+    method: "GET",
+  }).then((response) => {
+    roles.value = response.data.roles;
+  });
 });
 
 onBeforeUnmount(() => {
