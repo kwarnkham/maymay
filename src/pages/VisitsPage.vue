@@ -64,7 +64,7 @@
 <script setup>
 import usePagination from "src/composables/pagination";
 import useUtil from "src/composables/util";
-import { ref, watch, computed, onMounted, onBeforeMount } from "vue";
+import { ref, watch, computed, onMounted, onBeforeUnmount, inject } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { debounce } from "quasar";
 import AppPagination from "src/components/AppPagination.vue";
@@ -75,6 +75,7 @@ const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 const { visitStatusToString } = useApp();
+const bus = inject("bus");
 const statuses = ref([
   { key: "1", name: "Pending", value: true },
   { key: "2", name: "Products Added", value: true },
@@ -138,13 +139,16 @@ watch(
   { deep: true }
 );
 
+const updateVisits = (visit) => {
+  const index = pagination.value?.data.findIndex((e) => e.id == visit.id);
+  if (index >= 0) pagination.value.data[index] = visit;
+};
+
 onMounted(() => {
-  window.Echo.private("visit-status").listen("VisitStatusUpdated", (data) => {
-    console.log(data);
-  });
+  bus.on("visitCreated", updateVisits);
 });
 
-onBeforeMount(() => {
-  window.Echo.leave("visit-status");
+onBeforeUnmount(() => {
+  bus.off("visitCreated", updateVisits);
 });
 </script>

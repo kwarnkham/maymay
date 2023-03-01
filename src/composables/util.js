@@ -64,13 +64,16 @@ export default function useUtil () {
       height: height - offset + "px",
     }),
     initSocket: () => {
+      const key = process.env.PUSHER_KEY;
+      const cluster = process.env.PUSHER_CLUSTER
+      if (!key || !cluster) return;
       window.Pusher = Pusher;
       window.Echo = new Echo({
         broadcaster: "pusher",
         // key: "6125e7ffbd1a07479efd",
-        key: process.env.PUSHER_KEY,
+        key,
         // cluster: "ap1",
-        cluster: process.env.PUSHER_CLUSTER,
+        cluster,
         forceTLS: true,
         authorizer: (channel) => {
           return {
