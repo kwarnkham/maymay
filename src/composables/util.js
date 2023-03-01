@@ -1,5 +1,7 @@
 import { api as axios } from "boot/axios";
 import { useQuasar } from "quasar";
+import Echo from "laravel-echo";
+import Pusher from "pusher-js";
 
 export default function useUtil () {
   const { loading, notify, loadingBar } = useQuasar();
@@ -32,7 +34,7 @@ export default function useUtil () {
       });
       return formData;
     },
-    api (options, showLoading = false) {
+    api: (options, showLoading = false) => {
       if (showLoading) loading.show()
       else loadingBar.start()
       return new Promise((resolve, reject) => {
@@ -61,5 +63,36 @@ export default function useUtil () {
     vhPage: (offset, height) => ({
       height: height - offset + "px",
     }),
+    initSocket: () => {
+      window.Pusher = Pusher;
+      window.Echo = new Echo({
+        broadcaster: "pusher",
+        // key: "6125e7ffbd1a07479efd",
+        key: process.env.PUSHER_KEY,
+        // cluster: "ap1",
+        cluster: process.env.PUSHER_CLUSTER,
+        forceTLS: true,
+        authorizer: (channel) => {
+          return {
+            authorize: (socketId, callback) => {
+              axios({
+                method: "POST",
+                url: "broadcasting/auth",
+                data: {
+                  socket_id: socketId,
+                  channel_name: channel.name
+                }
+              })
+                .then((response) => {
+                  callback(null, response.data);
+                })
+                .catch((error) => {
+                  callback(error);
+                });
+            },
+          };
+        },
+      });
+    }
   }
 }

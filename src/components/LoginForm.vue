@@ -28,7 +28,7 @@ import { useQuasar } from "quasar";
 import { useUserStore } from "src/stores/user-store";
 import { api as axios } from "src/boot/axios";
 
-const { api } = useUtil();
+const { api, initSocket } = useUtil();
 const { localStorage } = useQuasar();
 const form = ref({
   username: "",
@@ -52,6 +52,8 @@ const submit = () => {
     userStore.setUser(response.data.user);
     axios.defaults.headers.common["Authorization"] =
       "Bearer " + response.data.token;
+
+    initSocket();
   });
 };
 </script>

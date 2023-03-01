@@ -64,7 +64,7 @@
 <script setup>
 import usePagination from "src/composables/pagination";
 import useUtil from "src/composables/util";
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, onMounted, onBeforeMount } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { debounce } from "quasar";
 import AppPagination from "src/components/AppPagination.vue";
@@ -137,4 +137,14 @@ watch(
   }, 800),
   { deep: true }
 );
+
+onMounted(() => {
+  window.Echo.private("visit-status").listen("VisitStatusUpdated", (data) => {
+    console.log(data);
+  });
+});
+
+onBeforeMount(() => {
+  window.Echo.leave("visit-status");
+});
 </script>

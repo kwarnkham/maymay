@@ -2,10 +2,9 @@
   <router-view />
 </template>
 
-<script>
-import { defineComponent } from 'vue'
+<script setup>
+import useUtil from "./composables/util";
 
-export default defineComponent({
-  name: 'App'
-})
+const { initSocket } = useUtil();
+initSocket();
 </script>
