@@ -24,11 +24,15 @@
           v-for="product in searchedProducts"
           :key="product.id"
           no-caps
-          :color="product.stock > 0 ? 'primary' : 'negative'"
+          :color="
+            product.stock > 0 || product.item_id == 1 ? 'primary' : 'negative'
+          "
           @click="addToVisit(product)"
           :disabled="product.stock <= 0 && product.item_id != 1"
         >
-          <q-badge floating>{{ product.stock }} </q-badge>
+          <q-badge floating v-if="product.item_id != 1">
+            {{ product.stock }}
+          </q-badge>
         </q-btn>
       </div>
     </q-card>

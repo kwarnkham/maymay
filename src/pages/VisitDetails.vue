@@ -230,10 +230,16 @@ const addToVisit = (product) => {
   )?.quantity;
 
   if (addedQuantity && addedQuantity + 1 > product.stock) {
-    notify({
-      message: "No enough stock",
-      type: "warning",
-    });
+    if (product.item_id == 1)
+      notify({
+        message: `${product.name} is already added`,
+        type: "info",
+      });
+    else
+      notify({
+        message: "No enough stock",
+        type: "warning",
+      });
     return;
   }
   const existed = products.value.findIndex((e) => e.id == product.id);

@@ -7,6 +7,26 @@ export default function useUtil () {
   const { loading, notify, loadingBar } = useQuasar();
 
   return {
+    sendNotification ({ title, body }) {
+      Notification.requestPermission().then((permission) => {
+        if (permission != "granted")
+          notify({
+            message: "Permission to send notification is denied",
+          });
+        else {
+          const notification = new Notification(
+            title,
+            {
+              body,
+            }
+          );
+
+          notification.addEventListener("click", (e) => {
+            notification.close();
+          });
+        }
+      });
+    },
     pickBy (data) {
       const temp = {}
       for (const property in data) {
