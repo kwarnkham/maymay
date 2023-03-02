@@ -29,6 +29,15 @@
         color="primary"
       />
     </q-item-section>
+    <q-item-section>
+      <q-btn
+        icon="delete"
+        no-caps
+        dense
+        @click="deletePatient(patient)"
+        color="negative"
+      />
+    </q-item-section>
   </q-item>
 </template>
 
@@ -48,7 +57,7 @@ const props = defineProps({
 const { dialog } = useQuasar();
 const { t } = useI18n();
 const { api } = useUtil();
-
+const emit = defineEmits(["deleted"]);
 const router = useRouter();
 const goToVisit = (data) => {
   api({
@@ -61,6 +70,22 @@ const goToVisit = (data) => {
       params: {
         visit: response.data.visit.id,
       },
+    });
+  });
+};
+
+const deletePatient = (patient) => {
+  dialog({
+    title: "Confirm",
+    message: `Do you want to delete the patient, ${patient.name}?`,
+    cancel: true,
+    noBackdropDismiss: true,
+  }).onOk(() => {
+    api({
+      url: "patients/" + patient.id,
+      method: "DELETE",
+    }).then(() => {
+      emit("deleted", patient.id);
     });
   });
 };

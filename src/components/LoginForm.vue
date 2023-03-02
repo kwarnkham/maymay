@@ -17,15 +17,6 @@
     />
     <div class="text-right q-mt-sm">
       <q-btn type="submit" label="Login" no-caps="" />
-      <q-btn
-        @click="
-          sendNotification({
-            title: 'Notification',
-            body: 'You can receive notification',
-          })
-        "
-        icon="notifications"
-      />
     </div>
   </q-form>
 </template>
@@ -37,7 +28,7 @@ import { useQuasar } from "quasar";
 import { useUserStore } from "src/stores/user-store";
 import { api as axios } from "src/boot/axios";
 
-const { api, initSocket, sendNotification } = useUtil();
+const { api, initSocket } = useUtil();
 const { localStorage } = useQuasar();
 const form = ref({
   username: "",

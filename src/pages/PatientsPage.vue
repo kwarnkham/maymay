@@ -21,6 +21,7 @@
           v-for="patient in pagination.data"
           :key="patient.id"
           :patient="patient"
+          @deleted="removeFromList"
         />
       </q-list>
     </div>
@@ -34,4 +35,9 @@ import useSearchFilter from "src/composables/searchFilter";
 
 const { pagination, current, fetch } = usePagination("patients");
 const { search } = useSearchFilter({ current, fetch });
+
+const removeFromList = (patientId) => {
+  const index = pagination.value.data.findIndex((e) => e.id == patientId);
+  pagination.value.data.splice(index, 1);
+};
 </script>
