@@ -17,6 +17,10 @@
     />
     <div class="text-right q-mt-sm">
       <q-btn type="submit" label="Login" no-caps="" />
+      <q-btn
+        icon="info"
+        @click="sendNotification({ title: 'test', body: 'testing' })"
+      />
     </div>
   </q-form>
 </template>
@@ -28,7 +32,7 @@ import { useQuasar } from "quasar";
 import { useUserStore } from "src/stores/user-store";
 import { api as axios } from "src/boot/axios";
 
-const { api, initSocket } = useUtil();
+const { api, initSocket, sendNotification } = useUtil();
 const { localStorage } = useQuasar();
 const form = ref({
   username: "",

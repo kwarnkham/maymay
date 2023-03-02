@@ -12,15 +12,11 @@ export default function useUtil () {
         return;
       }
       const notifyUser = () => {
-        const notification = new Notification(
-          title,
-          {
+        navigator.serviceWorker.ready.then((registration) => {
+          registration.showNotification(title, {
             body,
-          }
-        );
-
-        notification.addEventListener("click", (e) => {
-          notification.close();
+            vibrate: [200, 100, 200, 100, 200, 100, 200],
+          })
         });
       }
       if (Notification.permission == 'granted') {
@@ -30,6 +26,7 @@ export default function useUtil () {
           if (permission != "granted")
             notify({
               message: "Permission to send notification is denied",
+              type: 'info'
             });
           else {
             notifyUser()
