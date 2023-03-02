@@ -18,7 +18,7 @@
     <div class="text-right q-mt-sm">
       <q-btn type="submit" label="Login" no-caps="" />
       <q-btn
-        icon="info"
+        icon="notifications"
         @click="sendNotification({ title: 'test', body: 'testing' })"
       />
     </div>
@@ -31,8 +31,10 @@ import useUtil from "src/composables/util";
 import { useQuasar } from "quasar";
 import { useUserStore } from "src/stores/user-store";
 import { api as axios } from "src/boot/axios";
+import useApp from "src/composables/app";
 
 const { api, initSocket, sendNotification } = useUtil();
+const { subscribeToServer } = useApp();
 const { localStorage } = useQuasar();
 const form = ref({
   username: "",
@@ -57,7 +59,8 @@ const submit = () => {
     axios.defaults.headers.common["Authorization"] =
       "Bearer " + response.data.token;
 
-    initSocket();
+    initSocket;
+    subscribeToServer();
   });
 };
 </script>

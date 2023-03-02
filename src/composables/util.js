@@ -21,12 +21,12 @@ export default function useUtil () {
       }
       if (Notification.permission == 'granted') {
         notifyUser()
-      } else if (Notification.permission !== "denied") {
+      } else {
         Notification.requestPermission().then((permission) => {
           if (permission != "granted")
             notify({
               message: "Permission to send notification is denied",
-              type: 'info'
+              type: 'info',
             });
           else {
             notifyUser()

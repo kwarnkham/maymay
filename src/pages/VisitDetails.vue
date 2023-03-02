@@ -52,7 +52,7 @@
           v-for="(product, key) in products"
           :key="product.id"
           :class="{
-            'bg-green-2': visit.status == 3,
+            'bg-green-2': visit.status == 3 && !product.isCart,
             'bg-lime': packedProducts.includes(product.id),
           }"
         >
@@ -175,7 +175,7 @@ import ProductSearchingDialog from "src/components/ProductSearchingDialog.vue";
 import useApp from "src/composables/app";
 import useUtil from "src/composables/util";
 import { useUserStore } from "src/stores/user-store";
-import { inject, onMounted, ref, onBeforeUnmount, computed } from "vue";
+import { inject, onMounted, ref, onBeforeUnmount, computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 
@@ -243,8 +243,12 @@ const addToVisit = (product) => {
     return;
   }
   const existed = products.value.findIndex((e) => e.id == product.id);
+  product.isCart = true;
   if (existed == -1) products.value.push({ ...product, quantity: 1 });
-  else products.value[existed].quantity += 1;
+  else {
+    products.value[existed].quantity += 1;
+    products.value[existed].isCart = true;
+  }
 };
 
 const applyDiscount = (product) => {
@@ -269,6 +273,9 @@ const applyDiscount = (product) => {
     products.value[index] = {
       ...product,
       discount: discount > 0 ? discount : undefined,
+      isCart:
+        discount !=
+        visit.value.products.find((e) => e.id == product.id).pivot.discount,
     };
   });
 };
@@ -345,6 +352,10 @@ const editQuanity = (product) => {
     cancel: true,
   }).onOk((value) => {
     product.quantity = Number(value);
+
+    product.isCart =
+      product.quantity !=
+      visit.value.products.find((e) => e.id == product.id).pivot.quantity;
     products.value.splice(
       products.value.findIndex((e) => e.id == product.id),
       1,
@@ -361,17 +372,20 @@ const addProductsToVisit = (status) => {
     noBackdropDismiss: true,
     cancel: true,
   }).onOk(() => {
-    api({
-      url: `visits/${route.params.visit}/products`,
-      method: "POST",
-      data: {
-        products: status == 5 ? [] : products.value,
-        discount: status == 5 ? 0 : discount.value,
-        status,
+    api(
+      {
+        url: `visits/${route.params.visit}/products`,
+        method: "POST",
+        data: {
+          products: status == 5 ? [] : products.value,
+          discount: status == 5 ? 0 : discount.value,
+          status,
+        },
       },
-    }).then((response) => {
+      true
+    ).then((response) => {
       visit.value = response.data.visit;
-      reassignProducts();
+
       packedProducts.value = [];
       notify({
         message: t("success"),
@@ -381,6 +395,10 @@ const addProductsToVisit = (status) => {
   });
 };
 
+watch(visit, () => {
+  reassignProducts();
+});
+
 const reassignProducts = () => {
   products.value = visit.value.products.map((product) => ({
     ...product,
@@ -389,6 +407,9 @@ const reassignProducts = () => {
   }));
   discount.value = visit.value.discount;
 };
+const updateVisit = (data) => {
+  visit.value = data;
+};
 
 onMounted(() => {
   api({
@@ -396,13 +417,18 @@ onMounted(() => {
     url: "visits/" + route.params.visit,
   }).then((response) => {
     visit.value = response.data.visit;
-    reassignProducts();
   });
 
   bus.on("addToVisit", addToVisit);
+  bus.on("visitCreated", updateVisit);
+  bus.on("visitConfirmed", updateVisit);
+  bus.on("productAddedToVisit", updateVisit);
 });
 
 onBeforeUnmount(() => {
   bus.off("addToVisit", addToVisit);
+  bus.off("visitCreated", updateVisit);
+  bus.off("visitConfirmed", updateVisit);
+  bus.off("productAddedToVisit", updateVisit);
 });
 </script>

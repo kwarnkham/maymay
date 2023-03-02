@@ -141,14 +141,32 @@ watch(
 
 const updateVisits = (visit) => {
   const index = pagination.value?.data.findIndex((e) => e.id == visit.id);
-  if (index >= 0) pagination.value.data[index] = visit;
+  if (index >= 0) {
+    if (statusesParam.value.includes(visit.status)) {
+      pagination.value.data[index] = visit;
+    } else {
+      pagination.value.data.splice(index, 1);
+    }
+  } else {
+    if (statusesParam.value.includes(visit.status)) {
+      pagination.value.data.unshift(visit);
+    }
+  }
 };
 
 onMounted(() => {
+  bus.on("visitConfirmed", updateVisits);
+  bus.on("productAddedToVisit", updateVisits);
   bus.on("visitCreated", updateVisits);
+  bus.on("visitCompleted", updateVisits);
+  bus.on("visitCanceled", updateVisits);
 });
 
 onBeforeUnmount(() => {
+  bus.off("visitConfirmed", updateVisits);
+  bus.off("productAddedToVisit", updateVisits);
   bus.off("visitCreated", updateVisits);
+  bus.off("visitCompleted", updateVisits);
+  bus.off("visitCanceled", updateVisits);
 });
 </script>
