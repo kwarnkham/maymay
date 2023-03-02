@@ -44,9 +44,9 @@ import { useQuasar } from "quasar";
 import usePagination from "src/composables/pagination";
 import useSearchFilter from "src/composables/searchFilter";
 import { inject, onMounted, onBeforeUnmount } from "vue";
-import AppPagination from "./AppPagination.vue";
-import ItemFormDialog from "./ItemFormDialog.vue";
-import ProductFormDialog from "./ProductFormDialog.vue";
+import AppPagination from "src/components/AppPagination.vue";
+import ItemFormDialog from "src/components/dialogs/ItemFormDialog.vue";
+import ProductFormDialog from "src/components/dialogs/ProductFormDialog.vue";
 
 const { pagination, fetch, current, max } = usePagination("items");
 const { search } = useSearchFilter({ current, fetch });

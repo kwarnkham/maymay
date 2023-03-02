@@ -27,8 +27,8 @@
 
 <script setup>
 import { useQuasar } from "quasar";
-import ProductFormDialog from "src/components/ProductFormDialog.vue";
-import ProductPurchaseFormDialog from "src/components/ProductPurchaseFormDialog.vue";
+import ProductFormDialog from "src/components/dialogs/ProductFormDialog.vue";
+import ProductPurchaseFormDialog from "src/components/dialogs/ProductPurchaseFormDialog.vue";
 import PurchaseList from "src/components/PurchaseList.vue";
 import useUtil from "src/composables/util";
 import { onMounted, ref } from "vue";

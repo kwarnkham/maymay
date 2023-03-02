@@ -171,7 +171,7 @@
 
 <script setup>
 import { useQuasar } from "quasar";
-import ProductSearchingDialog from "src/components/ProductSearchingDialog.vue";
+import ProductSearchingDialog from "src/components/dialogs/ProductSearchingDialog.vue";
 import useApp from "src/composables/app";
 import useUtil from "src/composables/util";
 import { useUserStore } from "src/stores/user-store";
@@ -318,6 +318,7 @@ const applyVisitDiscount = () => {
             0
           ) && val >= 0,
     },
+    position: "top",
     noBackdropDismiss: true,
     cancel: true,
   }).onOk((value) => {
@@ -348,6 +349,7 @@ const editQuanity = (product) => {
         val <= Number(product.stock) + Number(getVisitQuantity(product.id)) &&
         val > 0,
     },
+    position: "top",
     noBackdropDismiss: true,
     cancel: true,
   }).onOk((value) => {

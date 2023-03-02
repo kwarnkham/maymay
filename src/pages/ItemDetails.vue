@@ -11,7 +11,7 @@
 
 <script setup>
 import { useQuasar } from "quasar";
-import ProductFormDialog from "src/components/ProductFormDialog.vue";
+import ProductFormDialog from "src/components/dialogs/ProductFormDialog.vue";
 import ProductList from "src/components/ProductList.vue";
 import useUtil from "src/composables/util";
 import { onMounted, ref } from "vue";
