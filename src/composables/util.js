@@ -98,9 +98,7 @@ export default function useUtil () {
       window.Pusher = Pusher;
       window.Echo = new Echo({
         broadcaster: "pusher",
-        // key: "6125e7ffbd1a07479efd",
         key,
-        // cluster: "ap1",
         cluster,
         forceTLS: true,
         authorizer: (channel) => {

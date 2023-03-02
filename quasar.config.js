@@ -157,9 +157,9 @@ module.exports = configure(function (ctx) {
 
 
       manifest: {
-        name: `May May`,
-        short_name: `May May`,
-        description: `A Quasar Project`,
+        name: `Fleißig`,
+        short_name: `Fleißig`,
+        description: `Fleißig`,
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
