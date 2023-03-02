@@ -8,24 +8,35 @@ export default function useUtil () {
 
   return {
     sendNotification ({ title, body }) {
-      Notification.requestPermission().then((permission) => {
-        if (permission != "granted")
-          notify({
-            message: "Permission to send notification is denied",
-          });
-        else {
-          const notification = new Notification(
-            title,
-            {
-              body,
-            }
-          );
+      if (!("Notification" in window)) {
+        return;
+      }
+      const notifyUser = () => {
+        const notification = new Notification(
+          title,
+          {
+            body,
+          }
+        );
 
-          notification.addEventListener("click", (e) => {
-            notification.close();
-          });
-        }
-      });
+        notification.addEventListener("click", (e) => {
+          notification.close();
+        });
+      }
+      if (Notification.permission == 'granted') {
+        notifyUser()
+      } else if (Notification.permission !== "denied") {
+        Notification.requestPermission().then((permission) => {
+          if (permission != "granted")
+            notify({
+              message: "Permission to send notification is denied",
+            });
+          else {
+            notifyUser()
+          }
+        });
+      }
+
     },
     pickBy (data) {
       const temp = {}

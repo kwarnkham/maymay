@@ -17,10 +17,10 @@
             })
           "
         >
-          May May
+          Fleißig
         </q-toolbar-title>
 
-        <div>24hr specialist clinic</div>
+        <div>Vierundzwanzig-Stunden-Spezialklinik</div>
       </q-toolbar>
     </q-header>
 
