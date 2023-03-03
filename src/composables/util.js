@@ -15,7 +15,7 @@ export default function useUtil () {
         navigator.serviceWorker.ready.then((registration) => {
           registration.showNotification(title, {
             body,
-            vibrate: [200, 100, 200, 100, 200, 100, 200],
+            // vibrate: [200, 100, 200, 100, 200, 100, 200],
           })
         });
       }

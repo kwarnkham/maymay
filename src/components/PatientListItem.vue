@@ -54,25 +54,10 @@ const props = defineProps({
   },
 });
 
-const { dialog } = useQuasar();
+const { dialog, notify } = useQuasar();
 const { t } = useI18n();
 const { api } = useUtil();
 const emit = defineEmits(["deleted"]);
-const router = useRouter();
-const goToVisit = (data) => {
-  api({
-    url: "visits",
-    method: "POST",
-    data,
-  }).then((response) => {
-    router.push({
-      name: "visit-details",
-      params: {
-        visit: response.data.visit.id,
-      },
-    });
-  });
-};
 
 const deletePatient = (patient) => {
   dialog({
@@ -101,7 +86,16 @@ const recordVisit = (patient, with_book_fees) => {
       noCaps: true,
     },
   }).onOk(() => {
-    goToVisit({ patient_id: patient.id, with_book_fees });
+    api({
+      url: "visits",
+      method: "POST",
+      data: { patient_id: patient.id, with_book_fees },
+    }).then(() => {
+      notify({
+        message: "Success",
+        type: "positive",
+      });
+    });
   });
 };
 </script>
