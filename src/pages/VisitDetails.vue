@@ -354,10 +354,8 @@ const editQuanity = (product) => {
     cancel: true,
   }).onOk((value) => {
     product.quantity = Number(value);
-
-    product.isCart =
-      product.quantity !=
-      visit.value.products.find((e) => e.id == product.id).pivot.quantity;
+    const found = visit.value.products.find((e) => e.id == product.id);
+    if (found) product.isCart = product.quantity != found.pivot.quantity;
     products.value.splice(
       products.value.findIndex((e) => e.id == product.id),
       1,
