@@ -54,9 +54,10 @@ const props = defineProps({
     required: false,
   },
 });
-
+const route = useRoute();
+const router = useRouter();
 const bus = inject("bus");
-const maxStock = ref("");
+const maxStock = ref(route.query.max_stock ?? "");
 
 const { pagination, current, max, fetch } = usePagination(
   "products",
@@ -76,9 +77,6 @@ const { search } = useSearchFilter({
 const addProduct = (product) => {
   pagination.value.data.unshift(product);
 };
-
-const route = useRoute();
-const router = useRouter();
 
 watch(
   maxStock,
