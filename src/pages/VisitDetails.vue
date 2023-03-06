@@ -143,7 +143,13 @@
       <template
         v-if="stringRoles.includes('admin') || stringRoles.includes('cashier')"
       >
-        <q-btn icon="save" @click="addProductsToVisit(2)" />
+        <q-btn
+          icon="save"
+          @click="
+            addProductsToVisit(products.every((e) => e.item_id == 1) ? 3 : 2)
+          "
+          :disabled="products.length <= 0"
+        />
         <q-btn
           icon="point_of_sale"
           @click="addProductsToVisit(4)"

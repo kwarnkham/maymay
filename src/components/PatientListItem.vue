@@ -66,10 +66,13 @@ const deletePatient = (patient) => {
     cancel: true,
     noBackdropDismiss: true,
   }).onOk(() => {
-    api({
-      url: "patients/" + patient.id,
-      method: "DELETE",
-    }).then(() => {
+    api(
+      {
+        url: "patients/" + patient.id,
+        method: "DELETE",
+      },
+      true
+    ).then(() => {
       emit("deleted", patient.id);
     });
   });
