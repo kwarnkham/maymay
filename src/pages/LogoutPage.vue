@@ -8,6 +8,8 @@ import useUtil from "src/composables/util";
 import { useUserStore } from "src/stores/user-store";
 import { onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { api as axios } from "src/boot/axios";
+
 const { api } = useUtil();
 const router = useRouter();
 const { localStorage, dialog } = useQuasar();
@@ -27,6 +29,7 @@ onMounted(() => {
       }).finally(() => {
         localStorage.remove("token");
         userStore.setUser(null);
+        axios.defaults.headers.common["Authorization"] = undefined;
         router.replace({
           name: "index",
         });
