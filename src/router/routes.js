@@ -28,7 +28,7 @@ const routes = [
       {
         path: 'register-patient',
         component: () => import('pages/RegisterPatient.vue'),
-        name: 'registerPatient',
+        name: 'register-patient',
         meta: {
           requiresAuth: true
         }
@@ -84,7 +84,7 @@ const routes = [
       {
         path: 'change-password',
         component: () => import('pages/ChangePassword.vue'),
-        name: 'changePassword',
+        name: 'change-password',
         meta: {
           requiresAuth: true
         }
@@ -96,7 +96,15 @@ const routes = [
         meta: {
           requiresAuth: true
         }
-      }
+      },
+      {
+        path: 'printer-setting',
+        component: () => import('pages/PrinterSetting.vue'),
+        name: 'printer-setting',
+        meta: {
+          requiresAuth: true
+        }
+      },
     ]
   },
 

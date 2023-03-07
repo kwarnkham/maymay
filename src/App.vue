@@ -11,13 +11,4 @@ const { subscribeToServer } = useApp();
 
 initSocket();
 subscribeToServer();
-
-// onBeforeUnmount(() => {
-// if (window.Echo)
-//   userStore.getUser.roles.forEach((role) => {
-//     if (role.name == "cashier") {
-//       window.Echo.leave("visit");
-//     }
-//   });
-// });
 </script>

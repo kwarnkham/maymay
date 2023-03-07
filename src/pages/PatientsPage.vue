@@ -9,7 +9,7 @@
         class="full-width"
         @click="
           $router.push({
-            name: 'registerPatient',
+            name: 'register-patient',
           })
         "
       />

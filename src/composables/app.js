@@ -61,7 +61,7 @@ export default function useApp () {
   }
   return {
     subscribeToServer () {
-      if (!Echo || !userStore.getUser) return;
+      if (!window.Echo || !userStore.getUser) return;
       const channel = Echo.private('visit')
       userStore.getUser.roles.forEach((role) => {
         if (role.name == "cashier") {

@@ -50,7 +50,11 @@ let menus = [
   },
   {
     name: "Change Password",
-    route: "changePassword",
+    route: "change-password",
+  },
+  {
+    name: "Printer Setting",
+    route: "printer-setting",
   },
   {
     name: "Logout",
