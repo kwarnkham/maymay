@@ -1,141 +1,148 @@
 <template>
   <q-page padding v-if="visit">
-    <div class="text-center text-h5">
-      {{ visit.patient.code }}
-    </div>
-    <div class="row justify-between">
-      <div class="text-subtitle1"># {{ visit.id }}</div>
-      <div class="text-subtitle1">
-        Status: {{ visitStatusToString(visit.status) }}
+    <div id="print-target" class="bg-transparent text-grey-10">
+      <div class="text-center text-h5">
+        {{ visit.patient.code }}
       </div>
-    </div>
-    <div class="row justify-between">
-      <div><q-icon name="person" /> {{ visit.patient.name }}</div>
-      <div>
-        {{ $t("age") }}: {{ visit.patient.age }}
-        <q-icon
-          :name="visit.patient.gender ? 'female' : 'male'"
-          :color="visit.patient.gender ? 'accent' : 'primary'"
+      <div class="row justify-between">
+        <div class="text-subtitle1"># {{ visit.id }}</div>
+        <div class="text-subtitle1">
+          Status: {{ visitStatusToString(visit.status) }}
+        </div>
+      </div>
+      <div class="row justify-between">
+        <div><q-icon name="person" /> {{ visit.patient.name }}</div>
+        <div>
+          {{ $t("age") }}: {{ visit.patient.age }}
+          <q-icon
+            :name="visit.patient.gender ? 'female' : 'male'"
+            :color="visit.patient.gender ? 'accent' : 'primary'"
+          />
+        </div>
+      </div>
+      <div class="row justify-between">
+        <div><q-icon name="phone" /> {{ visit.patient.phone }}</div>
+        <div><q-icon name="location_pin" /> {{ visit.patient.address }}</div>
+      </div>
+      <div class="q-my-xs row">
+        <q-btn
+          icon="add"
+          class="col"
+          v-if="![4, 5].includes(visit.status)"
+          @click="showProductSearchingDialog"
         />
       </div>
-    </div>
-    <div class="row justify-between">
-      <div><q-icon name="phone" /> {{ visit.patient.phone }}</div>
-      <div><q-icon name="location_pin" /> {{ visit.patient.address }}</div>
-    </div>
-    <div class="q-my-xs row">
-      <q-btn
-        icon="add"
-        class="col"
-        v-if="![4, 5].includes(visit.status)"
-        @click="showProductSearchingDialog"
-      />
-    </div>
-    <q-markup-table
-      separator="cell"
-      flat
-      bordered
-      wrap-cells
-      v-if="products.length"
-    >
-      <thead>
-        <tr>
-          <th class="text-left">#</th>
-          <th class="text-left">{{ $t("name") }}</th>
-          <th class="text-right">{{ $t("price") }}</th>
-          <th class="text-right">{{ $t("qty") }}</th>
-          <th class="text-right">{{ $t("amount") }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="(product, key) in products"
-          :key="product.id"
-          :class="{
-            'bg-green-2': visit.status == 3 && !product.isCart,
-            'bg-lime': packedProducts.includes(product.id),
-          }"
-        >
-          <td class="text-left">{{ key + 1 }}</td>
-          <td class="text-left">
-            <span @click="removeFromVisit(product)">{{ product.name }}</span>
-          </td>
-          <td class="text-right">
-            <span
-              @click="applyDiscount(product)"
-              :class="{ 'text-accent': product.discount }"
-            >
-              {{
-                (
-                  product.sale_price - (product.discount ?? 0) || "FOC"
-                ).toLocaleString()
-              }}
-            </span>
-          </td>
-          <td class="text-right">
-            <span @click="editQuanity(product)">{{ product.quantity }}</span>
-          </td>
-          <td class="text-right">
-            <span @click="markAsPacked(product)">
-              {{
-                (
-                  (product.sale_price - (product.discount ?? 0)) *
-                    product.quantity || "FOC"
-                ).toLocaleString()
-              }}
-            </span>
-          </td>
-        </tr>
+      <q-markup-table
+        class="bg-transparent text-grey-10"
+        separator="cell"
+        flat
+        bordered
+        wrap-cells
+        v-if="products.length"
+      >
+        <thead>
+          <tr>
+            <th class="text-left">#</th>
+            <th class="text-left">{{ $t("name") }}</th>
+            <th class="text-right">{{ $t("price") }}</th>
+            <th class="text-right">{{ $t("qty") }}</th>
+            <th class="text-right">{{ $t("amount") }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(product, key) in products"
+            :key="product.id"
+            :class="{
+              'bg-green-2': visit.status == 3 && !product.isCart,
+              'bg-lime': packedProducts.includes(product.id),
+            }"
+          >
+            <td class="text-left">{{ key + 1 }}</td>
+            <td class="text-left">
+              <span @click="removeFromVisit(product)">{{ product.name }}</span>
+            </td>
+            <td class="text-right">
+              <span
+                @click="applyDiscount(product)"
+                :class="{ 'text-accent': product.discount }"
+              >
+                {{
+                  (
+                    product.sale_price - (product.discount ?? 0) || "FOC"
+                  ).toLocaleString()
+                }}
+              </span>
+            </td>
+            <td class="text-right">
+              <span @click="editQuanity(product)">{{ product.quantity }}</span>
+            </td>
+            <td class="text-right">
+              <span @click="markAsPacked(product)">
+                {{
+                  (
+                    (product.sale_price - (product.discount ?? 0)) *
+                      product.quantity || "FOC"
+                  ).toLocaleString()
+                }}
+              </span>
+            </td>
+          </tr>
 
-        <tr>
-          <td colspan="3" class="text-right">Total</td>
-          <td class="text-right">
-            {{
-              products.reduce((carry, product) => carry + product.quantity, 0)
-            }}
-          </td>
-          <td class="text-right">
-            {{
-              products
-                .reduce(
-                  (carry, product) =>
-                    carry +
-                    (product.sale_price - (product.discount ?? 0)) *
-                      product.quantity,
-                  0
-                )
-                .toLocaleString()
-            }}
-          </td>
-        </tr>
-        <tr>
-          <td colspan="3"></td>
-          <td class="text-right">Discount</td>
-          <td class="text-right">
-            <span @click="applyVisitDiscount">{{
-              discount.toLocaleString()
-            }}</span>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="3"></td>
-          <td class="text-right">Amount</td>
-          <td class="text-right">
-            {{
-              (
-                products.reduce(
-                  (carry, product) =>
-                    carry +
-                    (product.sale_price - (product.discount ?? 0)) *
-                      product.quantity,
-                  0
-                ) - discount || "FOC"
-              ).toLocaleString()
-            }}
-          </td>
-        </tr>
-      </tbody>
-    </q-markup-table>
+          <tr>
+            <td colspan="3" class="text-right">Total</td>
+            <td class="text-right">
+              {{
+                products.reduce((carry, product) => carry + product.quantity, 0)
+              }}
+            </td>
+            <td class="text-right">
+              {{
+                products
+                  .reduce(
+                    (carry, product) =>
+                      carry +
+                      (product.sale_price - (product.discount ?? 0)) *
+                        product.quantity,
+                    0
+                  )
+                  .toLocaleString()
+              }}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3"></td>
+            <td class="text-right">Discount</td>
+            <td class="text-right">
+              <span @click="applyVisitDiscount">{{
+                discount.toLocaleString()
+              }}</span>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3"></td>
+            <td class="text-right">Amount</td>
+            <td class="text-right">
+              {{
+                (
+                  products.reduce(
+                    (carry, product) =>
+                      carry +
+                      (product.sale_price - (product.discount ?? 0)) *
+                        product.quantity,
+                    0
+                  ) - discount || "FOC"
+                ).toLocaleString()
+              }}
+            </td>
+          </tr>
+        </tbody>
+      </q-markup-table>
+    </div>
+    <div class="text-center q-mt-xs" v-if="visit.status == 4">
+      <q-btn icon="print" @click="printReceipt" color="primary" />
+    </div>
+
     <div
       class="row justify-around q-mt-xs"
       v-if="![4, 5].includes(visit.status)"
@@ -179,6 +186,7 @@
 import { useQuasar } from "quasar";
 import ProductSearchingDialog from "src/components/dialogs/ProductSearchingDialog.vue";
 import useApp from "src/composables/app";
+import usePrinter from "src/composables/printer";
 import useUtil from "src/composables/util";
 import { useUserStore } from "src/stores/user-store";
 import { inject, onMounted, ref, onBeforeUnmount, computed, watch } from "vue";
@@ -187,6 +195,7 @@ import { useRoute } from "vue-router";
 
 const userStore = useUserStore();
 const route = useRoute();
+const { sendPrinterData, sendTextData } = usePrinter();
 const { api } = useUtil();
 const { visitStatusToString } = useApp();
 const visit = ref(null);
@@ -214,7 +223,11 @@ const showProductSearchingDialog = () => {
     },
   });
 };
-
+const printReceipt = () => {
+  sendPrinterData(document.getElementById("print-target")).then(() => {
+    sendTextData("");
+  });
+};
 const removeFromVisit = (product) => {
   if ([4, 5].includes(visit.value.status)) return;
   dialog({
@@ -438,3 +451,9 @@ onBeforeUnmount(() => {
   bus.off("productAddedToVisit", updateVisit);
 });
 </script>
+
+<style scoped>
+#print-target :deep(*) {
+  letter-spacing: 1px;
+}
+</style>

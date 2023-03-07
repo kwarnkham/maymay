@@ -28,7 +28,12 @@
       />
     </div>
     <div class="text-center q-mt-sm">
-      <q-btn label="Test Print" no-caps @click="print" :disabled="printing" />
+      <q-btn
+        label="Test Print"
+        no-caps
+        @click="print"
+        :disabled="printing || (!text && !picture)"
+      />
     </div>
     <div class="row justify-center full-width">
       <div class="text-grey-10" id="print-target" style="width: 360px">
