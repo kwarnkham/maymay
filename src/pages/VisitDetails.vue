@@ -430,25 +430,26 @@ const updateVisit = (data) => {
   visit.value = data;
 };
 
-onMounted(() => {
+const fetchVisit = () => {
   api({
     method: "GET",
     url: "visits/" + route.params.visit,
   }).then((response) => {
     visit.value = response.data.visit;
   });
+};
 
+onMounted(() => {
+  fetchVisit();
   bus.on("addToVisit", addToVisit);
-  bus.on("visitCreated", updateVisit);
   bus.on("visitConfirmed", updateVisit);
-  bus.on("productAddedToVisit", updateVisit);
+  bus.on("productAddedToVisit", fetchVisit);
 });
 
 onBeforeUnmount(() => {
   bus.off("addToVisit", addToVisit);
-  bus.off("visitCreated", updateVisit);
   bus.off("visitConfirmed", updateVisit);
-  bus.off("productAddedToVisit", updateVisit);
+  bus.off("productAddedToVisit", fetchVisit);
 });
 </script>
 
