@@ -313,7 +313,7 @@ const applyDiscount = (product) => {
       discount: discount > 0 ? discount : undefined,
       isCart:
         discount !=
-        visit.value.products.find((e) => e.id == product.id).pivot.discount,
+        visit.value.products.find((e) => e.id == product.id)?.pivot.discount,
     };
   });
 };
@@ -446,7 +446,7 @@ const reassignProducts = () => {
   discount.value = visit.value.discount;
 };
 const updateVisit = (data) => {
-  visit.value = data;
+  visit.value.status = data.status;
 };
 
 const fetchVisit = () => {
