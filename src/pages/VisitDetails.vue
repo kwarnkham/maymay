@@ -2,27 +2,38 @@
   <q-page padding v-if="visit">
     <div id="print-target" class="bg-transparent text-grey-10">
       <div class="text-center text-h5">
-        {{ visit.patient.code }}
+        {{ visit.patient?.code }}
       </div>
-      <div class="row justify-between">
-        <div class="text-subtitle1"># {{ visit.id }}</div>
-        <div class="text-subtitle1">
+      <div
+        class="row text-body1"
+        :class="[printing ? 'justify-center' : 'justify-between']"
+      >
+        <div># {{ visit.id }}</div>
+        <div v-if="!printing">
           Status: {{ visitStatusToString(visit.status) }}
         </div>
       </div>
-      <div class="row justify-between">
-        <div><q-icon name="person" /> {{ visit.patient.name }}</div>
+      <div class="row justify-between text-body1">
+        <div>
+          <q-icon name="person" size="1.3em" />: {{ visit.patient.name }}
+        </div>
         <div>
           {{ $t("age") }}: {{ visit.patient.age }}
           <q-icon
             :name="visit.patient.gender ? 'female' : 'male'"
             :color="visit.patient.gender ? 'accent' : 'primary'"
+            size="1.3em"
           />
         </div>
       </div>
-      <div class="row justify-between">
-        <div><q-icon name="phone" /> {{ visit.patient.phone }}</div>
-        <div><q-icon name="location_pin" /> {{ visit.patient.address }}</div>
+      <div class="row justify-between text-body1">
+        <div>
+          <q-icon name="phone" size="1.3em" /> {{ visit.patient.phone }}
+        </div>
+        <div>
+          <q-icon name="location_pin" size="1.3em" />
+          {{ visit.patient.address }}
+        </div>
       </div>
       <div class="q-my-xs row">
         <q-btn
@@ -37,6 +48,7 @@
         separator="cell"
         flat
         bordered
+        dense
         wrap-cells
         v-if="products.length"
       >
@@ -138,6 +150,9 @@
           </tr>
         </tbody>
       </q-markup-table>
+      <div class="q-pa-xs" v-if="printing">
+        {{ new Date().toLocaleString("en-GB", { hour12: true }) }}
+      </div>
     </div>
     <div class="text-center q-mt-xs" v-if="visit.status == 4">
       <q-btn icon="print" @click="printReceipt" color="primary" />
@@ -223,9 +238,13 @@ const showProductSearchingDialog = () => {
     },
   });
 };
+const printing = ref(false);
 const printReceipt = () => {
-  sendPrinterData(document.getElementById("print-target")).then(() => {
-    sendTextData("");
+  printing.value = true;
+  sendPrinterData(document.getElementById("print-target")).finally(() => {
+    sendTextData("").finally(() => {
+      printing.value = false;
+    });
   });
 };
 const removeFromVisit = (product) => {
@@ -454,7 +473,12 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-#print-target :deep(*) {
-  letter-spacing: 1px;
+/* #print-target :deep(*) {
+
+} */
+
+td,
+th {
+  font-size: 18px !important;
 }
 </style>

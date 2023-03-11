@@ -9,7 +9,7 @@ export default function usePrinter () {
   const printSize = ref(Number(localStorage.getItem("printSize")) || 1);
   const printBit = ref(Number(localStorage.getItem("printBit")) || 4);
   const printing = ref(false);
-  const width = ref(360)
+  const width = ref(0)
   const height = ref(0)
   const printerStore = usePrinterStore()
   const printer = computed(() => printerStore.getPrinter)
@@ -47,7 +47,7 @@ export default function usePrinter () {
       spinner: QSpinnerHourglass,
       message: "Printing...",
     });
-    height.value = Math.round((node.clientHeight * width.value) / 360);
+
     const dataUrl = await domtoimage.toPng(node, { cacheBust: true })
 
     const printTarget = new Image();
@@ -168,7 +168,9 @@ export default function usePrinter () {
 
   }
   const sendPrinterData = (node) => {
-    width.value += (printSize.value * 40) - 40;
+    const baseWidth = 360;
+    width.value = baseWidth + (printSize.value * 40) - 40;
+    height.value = Math.round((node.clientHeight * width.value) / baseWidth);
     return new Promise((resolve, reject) => {
       if (!printer.value) {
         navigator.bluetooth
