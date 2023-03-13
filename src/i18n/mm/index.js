@@ -3,7 +3,7 @@
 
 export default {
   description: 'အမျိုးအမည်',
-  price: 'စျေးနှုန်း',
+  price: 'နှုန်း',
   quantity: "အရေတွက်",
   qty: "Qty",
   amount: "ပမာဏ",

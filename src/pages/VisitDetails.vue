@@ -1,6 +1,10 @@
 <template>
   <q-page padding v-if="visit">
-    <div id="print-target" class="bg-transparent text-grey-10">
+    <div
+      id="print-target"
+      class="bg-transparent text-grey-10"
+      :style="{ width: true ? '360px' : undefined }"
+    >
       <div class="text-center text-h5">
         {{ visit.patient?.code }}
       </div>
@@ -8,7 +12,7 @@
         class="row text-body1"
         :class="[printing ? 'justify-center' : 'justify-between']"
       >
-        <div># {{ visit.id }}</div>
+        <div :class="{ 'text-h5': printing }"># {{ visit.id }}</div>
         <div v-if="!printing">
           Status: {{ visitStatusToString(visit.status) }}
         </div>
@@ -71,7 +75,7 @@
             }"
           >
             <td class="text-left">{{ key + 1 }}</td>
-            <td class="text-left">
+            <td class="text-left word-break-all">
               <span @click="removeFromVisit(product)">{{ product.name }}</span>
             </td>
             <td class="text-right">
@@ -123,18 +127,20 @@
             </td>
           </tr>
           <tr>
-            <td colspan="3"></td>
-            <td class="text-right">Discount</td>
-            <td class="text-right">
-              <span @click="applyVisitDiscount">{{
-                discount.toLocaleString()
-              }}</span>
+            <td class="text-right" colspan="3">Discount</td>
+            <td class="text-right" colspan="2">
+              <span @click="applyVisitDiscount">
+                {{ discount.toLocaleString() }}
+              </span>
             </td>
           </tr>
           <tr>
-            <td colspan="3"></td>
-            <td class="text-right">Amount</td>
-            <td class="text-right">
+            <td class="text-right" colspan="3">Amount</td>
+            <td
+              class="text-right"
+              colspan="2"
+              style="font-size: 24px !important"
+            >
               {{
                 (
                   products.reduce(
@@ -150,8 +156,12 @@
           </tr>
         </tbody>
       </q-markup-table>
-      <div class="q-pa-xs" v-if="printing">
-        {{ new Date().toLocaleString("en-GB", { hour12: true }) }}
+
+      <div class="q-pa-xs text-center q-mb-xl" v-if="printing">
+        <div class="inline-block text-overline">------- Thank you -------</div>
+        <div class="text-h6">
+          {{ new Date().toLocaleString("en-GB", { hour12: true }) }}
+        </div>
       </div>
     </div>
     <div class="text-center q-mt-xs" v-if="visit.status == 4">
@@ -170,19 +180,19 @@
           @click="
             addProductsToVisit(products.every((e) => e.item_id == 1) ? 3 : 2)
           "
-          :disabled="products.length <= 0"
+          v-if="products.length > 0 && isCart"
         />
         <q-btn
           icon="point_of_sale"
           @click="addProductsToVisit(4)"
-          :disabled="visit.status != 3"
+          v-if="visit.status == 3 && !isCart"
           color="positive"
         />
         <q-btn
           icon="cancel"
           @click="addProductsToVisit(5)"
-          :disabled="visit.status == 4"
           color="warning"
+          v-if="visit.status != 4"
         />
       </template>
       <q-btn
@@ -190,7 +200,10 @@
         @click="addProductsToVisit(3)"
         :disabled="!allChecked"
         v-if="
-          stringRoles.includes('admin') || stringRoles.includes('pharmacist')
+          (stringRoles.includes('admin') ||
+            stringRoles.includes('pharmacist')) &&
+          allChecked &&
+          products.length > 0
         "
       />
     </div>
@@ -214,7 +227,7 @@ const { sendPrinterData, sendTextData } = usePrinter();
 const { api } = useUtil();
 const { visitStatusToString } = useApp();
 const visit = ref(null);
-const { dialog, notify } = useQuasar();
+const { dialog, notify, loading } = useQuasar();
 const bus = inject("bus");
 const products = ref([]);
 const discount = ref(0);
@@ -230,6 +243,12 @@ const allChecked = computed(() => {
   return result;
 });
 
+const isCart = computed(
+  () =>
+    products.value.filter((e) => e.isCart).length > 0 ||
+    products.value.length != visit.value.products.length
+);
+
 const showProductSearchingDialog = () => {
   dialog({
     component: ProductSearchingDialog,
@@ -244,6 +263,7 @@ const printReceipt = () => {
   sendPrinterData(document.getElementById("print-target")).finally(() => {
     sendTextData("").finally(() => {
       printing.value = false;
+      loading.hide();
     });
   });
 };
@@ -480,5 +500,9 @@ onBeforeUnmount(() => {
 td,
 th {
   font-size: 18px !important;
+}
+.word-break-all {
+  word-break: break-all !important;
+  /* font-size: 24px !important; */
 }
 </style>
