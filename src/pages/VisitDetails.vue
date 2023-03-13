@@ -3,7 +3,7 @@
     <div
       id="print-target"
       class="bg-transparent text-grey-10"
-      :style="{ width: true ? '360px' : undefined }"
+      :style="{ width: printing ? '360px' : undefined }"
     >
       <div class="text-center text-h5">
         {{ visit.patient?.code }}
@@ -319,7 +319,8 @@ const applyDiscount = (product) => {
       type: "number",
       inputmode: "numeric",
       pattern: "[0-9]*",
-      isValid: (val) => val <= product.sale_price,
+      isValid: (val) =>
+        val >= 0 && (product.item_id != 1 ? val <= product.sale_price : true),
       model: product.discount ? product.sale_price - product.discount : "",
     },
     position: "top",
@@ -330,7 +331,7 @@ const applyDiscount = (product) => {
     const index = products.value.findIndex((e) => e.id == product.id);
     products.value[index] = {
       ...product,
-      discount: discount > 0 ? discount : undefined,
+      discount: discount ?? undefined,
       isCart:
         discount !=
         visit.value.products.find((e) => e.id == product.id)?.pivot.discount,
