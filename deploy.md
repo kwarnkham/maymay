@@ -1,7 +1,7 @@
 ```
-scp pwa.zip root@facile.madewithheart.tech:/root/
+scp pwa.zip root@coffee.book-mm.com:/root/
 
-cd /var/www/maymay-clinic && rm -r ./* && mv /root/pwa.zip ./pwa.zip && unzip pwa.zip && rm pwa.zip && mv pwa/* ./ && rm -r pwa
+cd /etc/nginx/html/clinic && rm -rf ./* && mv /root/pwa.zip ./pwa.zip && unzip pwa.zip && rm -rf pwa.zip && mv pwa/* ./ && rm -rf pwa
 
 systemctl restart nginx
 ```

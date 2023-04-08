@@ -405,7 +405,10 @@ const editQuanity = (product) => {
       inputmode: "numeric",
       pattern: "[0-9]*",
       isValid: (val) =>
-        val <= Number(product.stock) + Number(getVisitQuantity(product.id)) &&
+        (product.item_id == 1
+          ? true
+          : val <=
+            Number(product.stock) + Number(getVisitQuantity(product.id))) &&
         val > 0,
     },
     position: "top",
