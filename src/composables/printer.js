@@ -64,12 +64,14 @@ export default function usePrinter () {
     canvas.height = height.value;
     const context = canvas.getContext("2d");
     context.drawImage(document.getElementById(printId), 0, 0, canvas.width, canvas.height);
-    return context.getImageData(
+    const imageData = context.getImageData(
       0,
       0,
       canvas.width,
       canvas.height
     ).data
+    // document.body.appendChild(canvas)
+    return imageData
   }
   const getDarkPixel = (x, y, imageData) => {
     // Return the pixels that will be printed black

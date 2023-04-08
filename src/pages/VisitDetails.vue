@@ -165,7 +165,12 @@
       </div>
     </div>
     <div class="text-center q-mt-xs" v-if="visit.status == 4">
-      <q-btn icon="print" @click="printReceipt" color="primary" />
+      <q-btn
+        icon="print"
+        @click="printReceipt"
+        color="primary"
+        :disabled="printing"
+      />
     </div>
 
     <div
@@ -260,12 +265,14 @@ const showProductSearchingDialog = () => {
 const printing = ref(false);
 const printReceipt = () => {
   printing.value = true;
-  sendPrinterData(document.getElementById("print-target")).finally(() => {
-    sendTextData("").finally(() => {
-      printing.value = false;
-      loading.hide();
+  setTimeout(() => {
+    sendPrinterData(document.getElementById("print-target")).finally(() => {
+      sendTextData("").finally(() => {
+        printing.value = false;
+        loading.hide();
+      });
     });
-  });
+  }, 0);
 };
 const removeFromVisit = (product) => {
   if ([4, 5].includes(visit.value.status)) return;
