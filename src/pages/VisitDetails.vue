@@ -1,10 +1,6 @@
 <template>
   <q-page padding v-if="visit">
-    <div
-      id="print-target"
-      class="bg-transparent text-grey-10"
-      :style="{ width: printing ? '360px' : undefined }"
-    >
+    <div id="print-target" class="bg-transparent text-grey-10">
       <div class="text-center text-h5">
         {{ visit.patient?.code }}
       </div>
@@ -12,7 +8,7 @@
         class="row text-body1"
         :class="[printing ? 'justify-center' : 'justify-between']"
       >
-        <div :class="{ 'text-h5': printing }"># {{ visit.id }}</div>
+        <div># {{ visit.id }}</div>
         <div v-if="!printing">
           Status: {{ visitStatusToString(visit.status) }}
         </div>
@@ -159,7 +155,7 @@
 
       <div class="q-pa-xs text-center q-mb-xl" v-if="printing">
         <div class="inline-block text-overline">------- Thank you -------</div>
-        <div class="text-h6">
+        <div class="text-grey-10">
           {{ new Date().toLocaleString("en-GB", { hour12: true }) }}
         </div>
       </div>
