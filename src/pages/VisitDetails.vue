@@ -477,6 +477,7 @@ const reassignProducts = () => {
     ...product,
     quantity: product.pivot.quantity,
     discount: product.pivot.discount,
+    sale_price: product.pivot.sale_price,
   }));
   discount.value = visit.value.discount;
 };
