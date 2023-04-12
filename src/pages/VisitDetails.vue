@@ -1,21 +1,25 @@
 <template>
   <q-page padding v-if="visit">
-    <div id="print-target" class="bg-transparent text-grey-10">
+    <div
+      id="print-target"
+      class="bg-transparent text-grey-10"
+      :style="{ width: printing ? '360px' : undefined }"
+    >
       <div class="text-center text-h5">
         {{ visit.patient?.code }}
       </div>
-      <div
-        class="row text-body1"
-        :class="[printing ? 'justify-center' : 'justify-between']"
-      >
+      <div class="row text-body1 justify-between">
         <div># {{ visit.id }}</div>
         <div v-if="!printing">
           Status: {{ visitStatusToString(visit.status) }}
         </div>
+        <div class="text-grey-10" v-else>
+          {{ new Date().toLocaleString("en-GB", { hour12: true }) }}
+        </div>
       </div>
       <div class="row justify-between text-body1">
         <div>
-          <q-icon name="person" size="1.3em" />: {{ visit.patient.name }}
+          {{ visit.patient.name }}
         </div>
         <div>
           {{ $t("age") }}: {{ visit.patient.age }}
@@ -28,7 +32,7 @@
       </div>
       <div class="row justify-between text-body1">
         <div>
-          <q-icon name="phone" size="1.3em" /> {{ visit.patient.phone }}
+          {{ visit.patient.phone }}
         </div>
         <div>
           <q-icon name="location_pin" size="1.3em" />
@@ -51,6 +55,7 @@
         dense
         wrap-cells
         v-if="products.length"
+        :class="[printing ? 'small-text' : 'normal-text']"
       >
         <thead>
           <tr>
@@ -71,8 +76,14 @@
             }"
           >
             <td class="text-left">{{ key + 1 }}</td>
-            <td class="text-left word-break-all">
-              <span @click="removeFromVisit(product)">{{ product.name }}</span>
+            <td class="text-left">
+              <span
+                @click="removeFromVisit(product)"
+                class="inline-block"
+                :class="{ 'ellipsis-text': printing }"
+              >
+                {{ product.name }}
+              </span>
             </td>
             <td class="text-right">
               <span
@@ -135,7 +146,7 @@
             <td
               class="text-right"
               colspan="2"
-              style="font-size: 24px !important"
+              style="font-size: 18px !important"
             >
               {{
                 (
@@ -155,9 +166,6 @@
 
       <div class="q-pa-xs text-center q-mb-xl" v-if="printing">
         <div class="inline-block text-overline">------- Thank you -------</div>
-        <div class="text-grey-10">
-          {{ new Date().toLocaleString("en-GB", { hour12: true }) }}
-        </div>
       </div>
     </div>
     <div class="text-center q-mt-xs" v-if="visit.status == 4">
@@ -268,7 +276,7 @@ const printReceipt = () => {
         loading.hide();
       });
     });
-  }, 0);
+  }, 1000);
 };
 const removeFromVisit = (product) => {
   if ([4, 5].includes(visit.value.status)) return;
@@ -499,17 +507,25 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style scoped>
-/* #print-target :deep(*) {
-
-} */
-
-td,
-th {
-  font-size: 18px !important;
+<style scoped lang="scss">
+.normal-text {
+  td,
+  th {
+    font-size: 18px !important;
+  }
 }
-.word-break-all {
-  word-break: break-all !important;
-  /* font-size: 24px !important; */
+
+.small-text {
+  td,
+  th {
+    font-size: 12px !important;
+  }
+}
+
+.ellipsis-text {
+  width: 10em;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 </style>
