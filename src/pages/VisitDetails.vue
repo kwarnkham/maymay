@@ -1,13 +1,6 @@
 <template>
   <q-page padding v-if="visit">
     <div>
-      <div
-        class="text-center"
-        v-if="userStore.getUser.roles.map((e) => e.name).includes('admin')"
-      >
-        <q-btn label="Create new type" no-caps @click="addNewVisitType" />
-      </div>
-
       <div class="row q-gutter-x-sm q-py-sm">
         <q-badge
           class="q-px-md q-py-xs cursor-pointer"
@@ -388,29 +381,6 @@ const addToVisit = (product) => {
   }
 };
 
-const addNewVisitType = () => {
-  dialog({
-    title: "Create a new visit type",
-    prompt: {
-      model: "",
-      isValid: (val) => val != "",
-    },
-    noBackdropDismiss: true,
-    position: "top",
-    cancel: true,
-  }).onOk((val) => {
-    api({
-      method: "POST",
-      url: "visit-types",
-      data: {
-        name: val,
-      },
-    }).then((response) => {
-      visitTypes.value.push(response.data.visit_type);
-    });
-  });
-};
-
 const applyDiscount = (product) => {
   if ([4, 5].includes(visit.value.status)) return;
   if (!stringRoles.value.includes("admin")) return;
@@ -589,6 +559,9 @@ onMounted(() => {
   api({
     method: "GET",
     url: "visit-types",
+    params: {
+      hasFollowUps: "1",
+    },
   }).then((response) => {
     visitTypes.value = response.data.visit_types;
   });

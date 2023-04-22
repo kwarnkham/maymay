@@ -7,9 +7,20 @@
             {{ followUpVisit.follow_up.name }}
           </q-item-label>
 
-          <q-item-label overline>
-            {{ followUpVisit.visit.patient.phone }}
-            {{ followUpVisit.visit.patient.name }}
+          <q-item-label
+            overline
+            class="q-py-md"
+            @click="callMobile(followUpVisit.visit.patient.phone)"
+          >
+            <q-badge class="q-mr-sm">
+              <span class="text-white">
+                {{ followUpVisit.visit.patient.phone }}</span
+              >
+            </q-badge>
+
+            <span class="text-secondary">
+              {{ followUpVisit.visit.patient.name }}
+            </span>
           </q-item-label>
           <div>
             <q-btn
@@ -28,7 +39,24 @@
           </div>
         </q-item-section>
         <q-item-section side top>
-          <q-item-label> {{ followUpVisit.due_on }}</q-item-label>
+          <q-item-label
+            :class="{
+              'text-positive':
+                getDateDiff(
+                  new Date(),
+                  new Date(followUpVisit.due_on),
+                  'days'
+                ) == 0,
+              'text-negative':
+                getDateDiff(
+                  new Date(),
+                  new Date(followUpVisit.due_on),
+                  'days'
+                ) > 0,
+            }"
+          >
+            {{ followUpVisit.due_on }}
+          </q-item-label>
         </q-item-section>
       </q-item>
     </q-list>
@@ -39,10 +67,15 @@
 import { useQuasar } from "quasar";
 import usePagination from "src/composables/pagination";
 import useUtil from "src/composables/util";
+import { date } from "quasar";
+const { getDateDiff } = date;
 
 const { pagination } = usePagination("follow-up-visits");
 const { dialog } = useQuasar();
 const { api } = useUtil();
+const callMobile = (phoneNumber) => {
+  window.open(`tel:${phoneNumber}`, "_self");
+};
 const markAsDone = (followUpVisit) => {
   dialog({
     title: "Mark as finished?",
