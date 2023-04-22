@@ -68,11 +68,24 @@ export default function usePagination (url, params) {
       .then(fetchMore);
   });
 
+  const updateQueryAndFetch = (newQuery) => {
+    const options = {
+      name: route.name,
+      query: JSON.parse(JSON.stringify(route.query)),
+    };
+    options.query = { ...options.query, ...newQuery };
+    router.replace(options).then(() => {
+      if (current.value == 1) fetch(options.query);
+      else current.value = 1;
+    });
+  };
+
   return {
     pagination,
     max,
     current,
     total,
-    fetch
+    fetch,
+    updateQueryAndFetch
   }
 }

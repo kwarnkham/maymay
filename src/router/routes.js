@@ -98,6 +98,30 @@ const routes = [
         }
       },
       {
+        path: 'scheduled-calls',
+        component: () => import('pages/ScheduledCalls.vue'),
+        name: 'scheduled-calls',
+        meta: {
+          requiresAuth: true
+        }
+      },
+      {
+        path: 'visit-types',
+        component: () => import('pages/VisitTypePage.vue'),
+        name: 'visit-types',
+        meta: {
+          requiresAuth: true
+        }
+      },
+      {
+        path: 'visit-type-details/:visitType',
+        component: () => import('pages/VisitTypeDetailsPage.vue'),
+        name: 'visit-type-details',
+        meta: {
+          requiresAuth: true
+        }
+      },
+      {
         path: 'printer-setting',
         component: () => import('pages/PrinterSetting.vue'),
         name: 'printer-setting',

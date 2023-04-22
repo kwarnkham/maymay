@@ -1,5 +1,29 @@
 <template>
   <q-page padding v-if="visit">
+    <div>
+      <div
+        class="text-center"
+        v-if="userStore.getUser.roles.map((e) => e.name).includes('admin')"
+      >
+        <q-btn label="Create new type" no-caps @click="addNewVisitType" />
+      </div>
+
+      <div class="row q-gutter-x-sm q-py-sm">
+        <q-badge
+          class="q-px-md q-py-xs cursor-pointer"
+          v-for="visitType in visitTypes"
+          :key="visitType.id"
+          @click="toggleType(visitType)"
+          :color="
+            visit.visit_types.map((e) => e.id).includes(visitType.id)
+              ? 'green'
+              : 'grey'
+          "
+        >
+          {{ visitType.name }}
+        </q-badge>
+      </div>
+    </div>
     <div
       id="print-target"
       class="bg-transparent text-grey-10"
@@ -242,6 +266,7 @@ const products = ref([]);
 const discount = ref(0);
 const { t } = useI18n();
 const packedProducts = ref([]);
+const visitTypes = ref([]);
 
 const stringRoles = computed(() => userStore.getUser.roles.map((e) => e.name));
 const allChecked = computed(() => {
@@ -293,6 +318,49 @@ const removeFromVisit = (product) => {
   });
 };
 
+const toggleType = (visitType) => {
+  dialog({
+    title: "Confirm",
+    noBackdropDismiss: true,
+    cancel: true,
+  }).onOk(() => {
+    if (!visit.value.visit_types.map((e) => e.id).includes(visitType.id)) {
+      dialog({
+        title: "Choose date to start from",
+        cancel: true,
+        position: "top",
+        noBackdropDismiss: true,
+        prompt: {
+          model: "",
+          type: "date",
+          isValid: (val) => !!val,
+        },
+      }).onOk((from) => {
+        api({
+          method: "POST",
+          url: `visits/${route.params.visit}/toggle-type`,
+          data: {
+            visit_type_id: visitType.id,
+            from,
+          },
+        }).then((response) => {
+          visit.value = response.data.visit;
+        });
+      });
+    } else {
+      api({
+        method: "POST",
+        url: `visits/${route.params.visit}/toggle-type`,
+        data: {
+          visit_type_id: visitType.id,
+        },
+      }).then((response) => {
+        visit.value = response.data.visit;
+      });
+    }
+  });
+};
+
 const addToVisit = (product) => {
   const addedQuantity = products.value.find(
     (e) => e.id == product.id
@@ -318,6 +386,29 @@ const addToVisit = (product) => {
     products.value[existed].quantity += 1;
     products.value[existed].isCart = true;
   }
+};
+
+const addNewVisitType = () => {
+  dialog({
+    title: "Create a new visit type",
+    prompt: {
+      model: "",
+      isValid: (val) => val != "",
+    },
+    noBackdropDismiss: true,
+    position: "top",
+    cancel: true,
+  }).onOk((val) => {
+    api({
+      method: "POST",
+      url: "visit-types",
+      data: {
+        name: val,
+      },
+    }).then((response) => {
+      visitTypes.value.push(response.data.visit_type);
+    });
+  });
 };
 
 const applyDiscount = (product) => {
@@ -495,6 +586,12 @@ const fetchVisit = () => {
 };
 
 onMounted(() => {
+  api({
+    method: "GET",
+    url: "visit-types",
+  }).then((response) => {
+    visitTypes.value = response.data.visit_types;
+  });
   fetchVisit();
   bus.on("addToVisit", addToVisit);
   bus.on("visitConfirmed", updateVisit);

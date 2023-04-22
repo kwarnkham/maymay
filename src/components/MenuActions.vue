@@ -39,6 +39,16 @@ let menus = [
     roles: ["admin"],
   },
   {
+    name: "Visit Types",
+    route: "visit-types",
+    roles: ["admin"],
+  },
+  {
+    name: "Scheduled Calls",
+    route: "scheduled-calls",
+    roles: ["receptionist", "admin"],
+  },
+  {
     name: "Product",
     route: "products",
     roles: ["admin"],
