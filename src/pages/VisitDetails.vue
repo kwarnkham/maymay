@@ -312,7 +312,7 @@ const removeFromVisit = (product) => {
     cancel: true,
   }).onOk(() => {
     products.value.splice(
-      products.value.findIndex((e) => e.id == product),
+      products.value.findIndex((e) => e.id == product.id),
       1
     );
   });
