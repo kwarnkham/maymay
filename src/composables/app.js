@@ -40,7 +40,7 @@ export default function useApp () {
     notify({
       message,
       type: 'info',
-      position: 'center',
+      position: 'top-left',
       closeBtn: true,
       timeout: 0,
       actions: [

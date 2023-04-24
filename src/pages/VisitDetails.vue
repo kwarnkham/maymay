@@ -1,5 +1,5 @@
 <template>
-  <q-page padding v-if="visit">
+  <q-page padding v-if="visit" :key="$route.fullPath">
     <div>
       <div class="row q-gutter-x-sm q-py-sm">
         <q-badge
@@ -185,12 +185,18 @@
         <div class="inline-block text-overline">------- Thank you -------</div>
       </div>
     </div>
-    <div class="text-center q-mt-xs" v-if="visit.status == 4">
+    <div class="text-center q-mt-xs q-gutter-x-sm" v-if="visit.status == 4">
       <q-btn
         icon="print"
         @click="printReceipt"
         color="primary"
         :disabled="printing"
+      />
+      <q-btn
+        icon="cancel"
+        @click="addProductsToVisit(5)"
+        color="warning"
+        v-if="visit.status != 4 || stringRoles.includes('admin')"
       />
     </div>
 
@@ -214,12 +220,6 @@
           v-if="visit.status == 3 && !isCart"
           color="positive"
         />
-        <q-btn
-          icon="cancel"
-          @click="addProductsToVisit(5)"
-          color="warning"
-          v-if="visit.status != 4"
-        />
       </template>
       <q-btn
         icon="local_post_office"
@@ -231,6 +231,12 @@
           allChecked &&
           products.length > 0
         "
+      />
+      <q-btn
+        icon="cancel"
+        @click="addProductsToVisit(5)"
+        color="warning"
+        v-if="visit.status != 4 || stringRoles.includes('admin')"
       />
     </div>
   </q-page>
@@ -245,10 +251,11 @@ import useUtil from "src/composables/util";
 import { useUserStore } from "src/stores/user-store";
 import { inject, onMounted, ref, onBeforeUnmount, computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 const userStore = useUserStore();
 const route = useRoute();
+const router = useRouter();
 const { sendPrinterData, sendTextData } = usePrinter();
 const { api } = useUtil();
 const { visitStatusToString } = useApp();
@@ -383,7 +390,8 @@ const addToVisit = (product) => {
 
 const applyDiscount = (product) => {
   if ([4, 5].includes(visit.value.status)) return;
-  if (!stringRoles.value.includes("admin")) return;
+  if (!stringRoles.value.includes("cashier")) return;
+  if (!stringRoles.value.includes("admin") && product.item_id != 1) return;
   dialog({
     title: "Apply discount for " + product.name,
     message: "Normal sale price is " + product.sale_price,
@@ -499,7 +507,8 @@ const editQuanity = (product) => {
 };
 
 const addProductsToVisit = (status) => {
-  if ([4, 5].includes(visit.value.status)) return;
+  if (visit.value.status == 5) return;
+  if (visit.value.status == 4 && !stringRoles.value.includes("admin")) return;
   dialog({
     title: "Confirm",
     message: "Are you sure?",
@@ -547,13 +556,20 @@ const updateVisit = (data) => {
 };
 
 const fetchVisit = () => {
-  api({
-    method: "GET",
-    url: "visits/" + route.params.visit,
-  }).then((response) => {
+  api(
+    {
+      method: "GET",
+      url: "visits/" + route.params.visit,
+    },
+    true
+  ).then((response) => {
     visit.value = response.data.visit;
   });
 };
+
+watch(route, () => {
+  fetchVisit();
+});
 
 onMounted(() => {
   api({
