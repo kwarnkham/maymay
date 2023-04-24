@@ -568,7 +568,7 @@ const fetchVisit = () => {
 };
 
 watch(route, () => {
-  fetchVisit();
+  if (route.name == "visit-details") fetchVisit();
 });
 
 onMounted(() => {
