@@ -22,6 +22,7 @@
           :key="patient.id"
           :patient="patient"
           @deleted="removeFromList"
+          @patientUpdated="updatePatient"
         />
       </q-list>
     </div>
@@ -39,5 +40,11 @@ const { search } = useSearchFilter({ current, fetch });
 const removeFromList = (patientId) => {
   const index = pagination.value.data.findIndex((e) => e.id == patientId);
   pagination.value.data.splice(index, 1);
+};
+
+const updatePatient = (patient) => {
+  console.log(patient);
+  const index = pagination.value.data.findIndex((e) => e.id == patient.id);
+  pagination.value.data[index] = patient;
 };
 </script>

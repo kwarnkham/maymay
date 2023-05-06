@@ -38,6 +38,9 @@
         color="negative"
       />
     </q-item-section>
+    <q-item-section>
+      <q-btn icon="edit" no-caps dense @click="edit(patient)" color="info" />
+    </q-item-section>
   </q-item>
 </template>
 
@@ -45,7 +48,6 @@
 import { useQuasar } from "quasar";
 import useUtil from "src/composables/util";
 import { useI18n } from "vue-i18n";
-import { useRouter } from "vue-router";
 
 const props = defineProps({
   patient: {
@@ -57,7 +59,7 @@ const props = defineProps({
 const { dialog, notify } = useQuasar();
 const { t } = useI18n();
 const { api } = useUtil();
-const emit = defineEmits(["deleted"]);
+const emit = defineEmits(["deleted", "patientUpdated"]);
 
 const deletePatient = (patient) => {
   dialog({
@@ -75,6 +77,75 @@ const deletePatient = (patient) => {
     ).then(() => {
       emit("deleted", patient.id);
     });
+  });
+};
+
+const edit = (patient) => {
+  patient = JSON.parse(JSON.stringify(patient));
+  dialog({
+    title: "Choose options",
+    cancel: true,
+    noBackdropDismiss: true,
+    options: {
+      type: "radio",
+      model: "name",
+      items: [
+        { label: "Name", value: "name" },
+        { label: "Age", value: "age" },
+        { label: "Gender", value: "gender" },
+        { label: "Address", value: "address" },
+        { label: "Phone", value: "phone" },
+      ],
+    },
+  }).onOk((val) => {
+    const prompt = {
+      model: patient[val],
+      type: ["age", "phone"].includes(val) ? "tel" : "text",
+      isValid: (v) => v != "",
+    };
+    if (val != "gender")
+      dialog({
+        title: "Edit " + val,
+        prompt,
+        cancel: true,
+        noBackdropDismiss: true,
+      }).onOk((value) => {
+        if (value != patient[val]) {
+          patient[val] = value;
+          updatePatient(patient, patient.id);
+        }
+      });
+    else if (val == "gender")
+      dialog({
+        title: "Edit gender" + patient[val],
+        noBackdropDismiss: true,
+        cancel: true,
+        options: {
+          type: "radio",
+          model: patient[val],
+          items: [
+            { label: "Male", value: 0, color: "primary" },
+            { label: "Female", value: 1, color: "accent" },
+          ],
+        },
+      }).onOk((value) => {
+        if (patient[val] != value) {
+          patient[val] = value;
+          updatePatient(patient, patient.id);
+        }
+      });
+  });
+};
+const updatePatient = (data, patient) => {
+  api(
+    {
+      method: "PUT",
+      url: `patients/${patient}`,
+      data,
+    },
+    true
+  ).then((response) => {
+    emit("patientUpdated", response.data.patient);
   });
 };
 const recordVisit = (patient, with_book_fees) => {
