@@ -50,6 +50,14 @@ const routes = [
         }
       },
       {
+        path: 'reports',
+        component: () => import('pages/ReportPage.vue'),
+        name: 'reports',
+        meta: {
+          requiresAuth: true
+        }
+      },
+      {
         path: 'items',
         component: () => import('pages/ItemPage.vue'),
         name: 'items',

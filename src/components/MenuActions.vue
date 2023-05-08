@@ -63,6 +63,11 @@ let menus = [
     route: "change-password",
   },
   {
+    name: "Reports",
+    route: "reports",
+    roles: ["admin"],
+  },
+  {
     name: "Printer Setting",
     route: "printer-setting",
   },
