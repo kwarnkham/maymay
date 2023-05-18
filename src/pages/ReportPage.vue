@@ -1,15 +1,13 @@
 <template>
   <q-page padding>
     <div class="q-pa-sm q-gutter-y-sm shadow-2">
-      <div class="text-center text-h6">Purchases Report</div>
       <q-input type="date" v-model="from" label="From" />
       <q-input type="date" v-model="to" label="To" />
-      <div class="text-right">
-        <q-btn label="Get report" @click="getPurchaseReport" no-caps />
-      </div>
     </div>
-    <div class="text-center q-mt-md">
-      <q-btn label="Get Products Report" @click="getProductReport" no-caps />
+    <div class="text-center q-mt-md row justify-around">
+      <q-btn label="Products Report" @click="getProductReport" no-caps />
+      <q-btn label="Purchases Report" @click="getPurchaseReport" no-caps />
+      <q-btn label="Sales Report" @click="getSaleReport" no-caps />
     </div>
   </q-page>
 </template>
@@ -39,36 +37,63 @@ const to = ref(
 const { api } = useUtil();
 
 const getPurchaseReport = () => {
-  api({
-    method: "GET",
-    url: "purchases/report",
-    params: {
-      from: from.value,
-      to: to.value,
+  api(
+    {
+      method: "GET",
+      url: "purchases/report",
+      params: {
+        from: from.value,
+        to: to.value,
+      },
     },
-  }).then((response) => {
-    if (response.data.data.length > 0)
-      downloadCsv(
-        toCsvString(response.data.data),
-        `purchases reports from ${from.value} to ${to.value}`
-      );
-    else
-      notify({
-        message: "No data",
-        type: "info",
-      });
+    true
+  ).then((response) => {
+    downloadCsv(
+      toCsvString(response.data.data),
+      `purchases reports from ${from.value} to ${to.value}`
+    );
   });
 };
 const getProductReport = () => {
-  api({
-    method: "GET",
-    url: "products/report",
-  }).then((response) => {
-    downloadCsv(toCsvString(response.data.data), "products reports");
+  api(
+    {
+      method: "GET",
+      url: "products/report",
+      params: {
+        from: from.value,
+        to: to.value,
+      },
+    },
+    true
+  ).then((response) => {
+    downloadCsv(
+      toCsvString(response.data.data),
+      `products reports from ${from.value} to ${to.value}`
+    );
+  });
+};
+
+const getSaleReport = () => {
+  api(
+    {
+      method: "GET",
+      url: "visits/report",
+      params: {
+        from: from.value,
+        to: to.value,
+      },
+    },
+    true
+  ).then((response) => {
+    downloadCsv(
+      toCsvString(response.data.data),
+      `product sales reports from ${from.value} to ${to.value}`
+    );
   });
 };
 
 const toCsvString = (data) => {
+  if (!data[0]) return;
   const keys = Object.keys(data[0]);
   return [
     keys,
@@ -81,6 +106,13 @@ const toCsvString = (data) => {
 };
 
 const downloadCsv = (data, fileName) => {
+  if (!data) {
+    notify({
+      message: "No data",
+      type: "info",
+    });
+    return;
+  }
   // Creating a Blob for having a csv file format
   // and passing the data with type
   const blob = new Blob([data], { type: "text/csv" });
