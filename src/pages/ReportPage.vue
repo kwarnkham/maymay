@@ -8,6 +8,7 @@
       <q-btn label="Products Report" @click="getProductReport" no-caps />
       <q-btn label="Purchases Report" @click="getPurchaseReport" no-caps />
       <q-btn label="Sales Report" @click="getSaleReport" no-caps />
+      <q-btn label="Visit Report" @click="getVisitReport" no-caps />
     </div>
   </q-page>
 </template>
@@ -18,7 +19,7 @@ import { ref } from "vue";
 import { date, useQuasar } from "quasar";
 
 const { formatDate } = date;
-const { notify } = useQuasar();
+const { notify, dialog } = useQuasar();
 
 const from = ref(
   formatDate(
@@ -35,6 +36,31 @@ const to = ref(
 );
 
 const { api } = useUtil();
+
+const getVisitReport = () => {
+  api(
+    {
+      method: "GET",
+      url: "visits",
+      params: {
+        statuses: "4",
+        from: from.value,
+        to: to.value,
+      },
+    },
+    true
+  ).then((response) => {
+    downloadCsv(
+      toCsvString(
+        response.data.data.data.map((e) => {
+          e.patient = e.patient.name;
+          return e;
+        })
+      ),
+      `visit reports from ${from.value} to ${to.value}`
+    );
+  });
+};
 
 const getPurchaseReport = () => {
   api(
@@ -55,21 +81,39 @@ const getPurchaseReport = () => {
   });
 };
 const getProductReport = () => {
-  api(
-    {
-      method: "GET",
-      url: "products/report",
-      params: {
-        from: from.value,
-        to: to.value,
-      },
+  dialog({
+    title: "Choose date",
+    position: "top",
+    cancel: true,
+    noBackdropDismiss: true,
+    prompt: {
+      model: formatDate(
+        new Date(
+          new Date().getFullYear(),
+          new Date().getMonth(),
+          new Date().getDate()
+        ),
+        "YYYY-MM-DD"
+      ),
+      type: "date",
+      isValid: (v) => v != "",
     },
-    true
-  ).then((response) => {
-    downloadCsv(
-      toCsvString(response.data.data),
-      `products reports from ${from.value} to ${to.value}`
-    );
+  }).onOk((date) => {
+    api(
+      {
+        method: "GET",
+        url: "products/report",
+        params: {
+          date,
+        },
+      },
+      true
+    ).then((response) => {
+      downloadCsv(
+        toCsvString(response.data.data),
+        `products reports for ${date}`
+      );
+    });
   });
 };
 
