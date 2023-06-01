@@ -4,11 +4,16 @@
       <q-input type="date" v-model="from" label="From" />
       <q-input type="date" v-model="to" label="To" />
     </div>
-    <div class="text-center q-mt-md row justify-around">
+    <div class="text-center q-mt-md row justify-around q-gutter-sm">
       <q-btn label="Products Report" @click="getProductReport" no-caps />
       <q-btn label="Purchases Report" @click="getPurchaseReport" no-caps />
       <q-btn label="Sales Report" @click="getSaleReport" no-caps />
       <q-btn label="Visit Report" @click="getVisitReport" no-caps />
+      <q-btn
+        label="Live products report"
+        @click="getLiveProductReport"
+        no-caps
+      />
     </div>
   </q-page>
 </template>
@@ -36,6 +41,18 @@ const to = ref(
 );
 
 const { api } = useUtil();
+
+const getLiveProductReport = () => {
+  api(
+    {
+      method: "GET",
+      url: "products/live-report",
+    },
+    true
+  ).then((response) => {
+    downloadCsv(toCsvString(response.data.data), `live product report from`);
+  });
+};
 
 const getVisitReport = () => {
   api(
